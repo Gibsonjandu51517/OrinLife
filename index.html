@@ -2,1122 +2,812 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>Orinlife — Nature's Healing, Delivered to You</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --green-deep:#0a2a14;
-  --green-mid:#1a4a28;
-  --green-sage:#3d7a4a;
-  --green-light:#7ab87f;
-  --green-pale:#c8e6c9;
-  --cream:#faf6ee;
-  --cream-warm:#f5ede0;
-  --gold:#c9a84c;
-  --gold-light:#e8d5a3;
-  --text-dark:#1a1a0f;
-  --text-mid:#4a5240;
-  --font-serif:'Cormorant Garamond',serif;
-  --font-sans:'DM Sans',sans-serif;
+  --g1:#1b5e20;--g2:#2e7d32;--g3:#388e3c;--g4:#43a047;
+  --gl:#66bb6a;--gp:#e8f5e9;--gt:#f1f8f1;
+  --gold:#f9a825;--gd:#f57f17;--golp:#fff8e1;
+  --cr:#fafaf8;--crw:#f5f0e8;--dark:#0d1f10;
+  --tx:#1a2a1a;--mid:#4a5a4a;--mute:#7a8a7a;--w:#fff;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'DM Sans','Helvetica Neue',sans-serif;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  --pad:clamp(1rem,5vw,5rem);
 }
 html{scroll-behavior:smooth}
-body{
-  background:var(--cream);
-  color:var(--text-dark);
-  font-family:var(--font-sans);
-  overflow-x:hidden;
-  cursor:none;
-}
+body{background:var(--cr);color:var(--tx);font-family:var(--sans);overflow-x:hidden}
+img{max-width:100%;display:block}
 
-/* CUSTOM CURSOR */
-.cursor{
-  position:fixed;width:12px;height:12px;background:var(--green-sage);
-  border-radius:50%;pointer-events:none;z-index:9999;
-  transform:translate(-50%,-50%);transition:transform 0.1s,background 0.3s;
-  mix-blend-mode:multiply;
-}
-.cursor-ring{
-  position:fixed;width:36px;height:36px;border:1.5px solid var(--green-sage);
-  border-radius:50%;pointer-events:none;z-index:9998;
-  transform:translate(-50%,-50%);transition:all 0.25s cubic-bezier(0.25,0.46,0.45,0.94);
-  opacity:0.6;
-}
-body:hover .cursor{transform:translate(-50%,-50%) scale(1)}
+/* CURSOR - desktop only */
+#c1,#c2{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%)}
+#c1{width:10px;height:10px;background:var(--gold);transition:width .18s,height .18s,background .3s}
+#c2{width:40px;height:40px;border:1.5px solid var(--g2);opacity:.65;z-index:9998;transition:transform .22s var(--ease),border-color .3s}
+body.hov #c1{width:18px;height:18px;background:var(--g2)}
+body.hov #c2{transform:translate(-50%,-50%) scale(2.2);border-color:var(--gold);opacity:.3}
+@media(pointer:coarse){#c1,#c2{display:none}body{cursor:auto}}
+
+/* SCROLL PROGRESS */
+#spb{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--g2),var(--gold));z-index:9999;width:0%;transition:width .1s linear}
+
+/* LOADER */
+#ld{position:fixed;inset:0;background:var(--g1);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;transition:opacity 1s,visibility 1s}
+#ld.out{opacity:0;visibility:hidden;pointer-events:none}
+.ld-img{height:clamp(48px,10vw,75px);filter:brightness(0) invert(1)}
+.ld-fb{font-family:var(--serif);font-size:clamp(1.8rem,5vw,3rem);font-weight:300;color:#fff;letter-spacing:.18em;display:none;animation:ldp 1.5s ease-in-out infinite}
+.ld-fb span{color:var(--gold)}
+@keyframes ldp{0%,100%{opacity:.4}50%{opacity:1}}
+.ld-bar{width:clamp(150px,40vw,220px);height:2px;background:rgba(255,255,255,.12);overflow:hidden}
+.ld-fill{height:100%;background:var(--gold);animation:ldf 1.8s var(--ease) forwards}
+@keyframes ldf{from{width:0}to{width:100%}}
+.ld-pct{color:rgba(255,255,255,.4);font-size:.72rem;letter-spacing:.25em}
 
 /* PARTICLES */
-#particles{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  pointer-events:none;z-index:0;overflow:hidden;
-}
-.particle{
-  position:absolute;border-radius:50%;
-  background:radial-gradient(circle,var(--green-light),transparent);
-  animation:float-particle linear infinite;
-  opacity:0;
-}
-@keyframes float-particle{
-  0%{transform:translateY(100vh) rotate(0deg);opacity:0}
-  10%{opacity:0.4}
-  90%{opacity:0.2}
-  100%{transform:translateY(-20vh) rotate(720deg);opacity:0}
-}
+#ptc{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.pt{position:absolute;border-radius:50%;animation:ptup linear infinite;opacity:0}
+@keyframes ptup{0%{transform:translateY(105vh) rotate(0deg) scale(0);opacity:0}10%{opacity:.28}90%{opacity:.1}100%{transform:translateY(-10vh) rotate(540deg) scale(1.5);opacity:0}}
+
+/* TOPBAR */
+.tb{background:var(--g1);padding:.42rem var(--pad);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4rem;position:relative;z-index:10}
+.tbl,.tbr{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+.tbi{display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.72rem;white-space:nowrap}
+.tbi svg{width:12px;height:12px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+.tbr a{color:rgba(255,255,255,.5);font-size:.7rem;text-decoration:none;letter-spacing:.07em;transition:color .25s}
+.tbr a:hover{color:var(--gold)}
+@media(max-width:580px){.tb{justify-content:center}.tbr{display:none}}
 
 /* NAV */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  padding:1.2rem 4rem;
-  display:flex;align-items:center;justify-content:space-between;
-  transition:all 0.5s ease;
+nav{position:sticky;top:0;z-index:100;background:var(--w);border-bottom:1px solid rgba(46,125,50,.1);padding:.7rem var(--pad);display:flex;align-items:center;justify-content:space-between;gap:1rem;transition:box-shadow .4s}
+nav.sc{box-shadow:0 4px 40px rgba(0,0,0,.09)}
+.nl-logo{height:clamp(34px,6vw,50px);display:flex;align-items:center}
+.nl-logo img{height:100%;width:auto;object-fit:contain;transition:transform .4s var(--spring)}
+.nl-logo:hover img{transform:scale(1.05)}
+.nl-logo .fb{font-family:var(--serif);font-size:1.65rem;font-weight:300;color:var(--g1);letter-spacing:.1em;display:none}
+.nl-logo .fb span{color:var(--gold)}
+/* hamburger */
+.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:5px;z-index:200}
+.hbg span{display:block;width:23px;height:2px;background:var(--g1);transition:all .35s var(--ease);transform-origin:center}
+.hbg.op span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hbg.op span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hbg.op span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+/* menu */
+.nmenu{display:flex;align-items:center;gap:1.8rem;list-style:none}
+.nmenu>li{position:relative}
+.nmenu>li>a{text-decoration:none;color:var(--mid);font-size:.79rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:.4rem 0;display:block;transition:color .3s;white-space:nowrap;cursor:pointer}
+.nmenu>li>a:hover{color:var(--g2)}
+.nmenu>li>a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--g2);transition:width .4s var(--ease)}
+.nmenu>li:hover>a::after{width:100%}
+.drop{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(10px);background:var(--w);border:1px solid rgba(46,125,50,.1);min-width:170px;box-shadow:0 20px 50px rgba(0,0,0,.1);opacity:0;visibility:hidden;transition:all .3s var(--ease);list-style:none;padding:.4rem 0}
+.nmenu>li:hover .drop{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+.drop li a{display:block;padding:.5rem 1.1rem;color:var(--mid);font-size:.77rem;text-decoration:none;transition:background .2s,color .2s;white-space:nowrap;cursor:pointer}
+.drop li a:hover{background:var(--gt);color:var(--g2)}
+.nav-r{display:flex;align-items:center;gap:.8rem;flex-shrink:0}
+.nav-call{font-size:.68rem;color:var(--mute);white-space:nowrap}
+.nav-call strong{color:var(--g2);display:block;font-size:.77rem}
+.nav-cta{background:var(--g2);color:var(--w);padding:.48rem 1.3rem;font-size:.74rem;letter-spacing:.13em;text-transform:uppercase;font-weight:500;border:none;text-decoration:none;display:inline-block;transition:background .3s,transform .2s;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%);white-space:nowrap;cursor:pointer}
+.nav-cta:hover{background:var(--g1);transform:translateY(-2px)}
+/* mobile menu */
+@media(max-width:900px){
+  .hbg{display:flex}.nav-call{display:none}
+  .nmenu{position:fixed;inset:0;background:var(--w);flex-direction:column;justify-content:center;align-items:center;gap:0;transform:translateX(100%);transition:transform .45s var(--ease);z-index:150;padding:2rem;overflow-y:auto}
+  .nmenu.op{transform:none}
+  .nmenu>li{width:100%;text-align:center}
+  .nmenu>li>a{font-size:1.15rem;padding:.9rem 0;justify-content:center}
+  .nmenu>li>a::after{display:none}
+  .drop{position:static;transform:none;box-shadow:none;border:none;background:var(--gt);visibility:visible;opacity:1;max-height:0;overflow:hidden;transition:max-height .4s ease}
+  .nmenu>li.op2 .drop{max-height:300px}
+  .drop li a{text-align:center;font-size:.95rem;padding:.55rem}
 }
-nav.scrolled{
-  background:rgba(250,246,238,0.95);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(61,122,74,0.15);
-  padding:0.8rem 4rem;
-}
-.nav-logo{
-  font-family:var(--font-serif);
-  font-size:2rem;font-weight:300;
-  color:var(--green-deep);letter-spacing:0.1em;
-  text-decoration:none;
-  position:relative;
-}
-.nav-logo span{color:var(--gold)}
-.nav-links{display:flex;gap:2.5rem;list-style:none}
-.nav-links a{
-  text-decoration:none;color:var(--green-mid);
-  font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;
-  font-weight:500;position:relative;padding-bottom:4px;
-}
-.nav-links a::after{
-  content:'';position:absolute;bottom:0;left:0;width:0;height:1px;
-  background:var(--gold);transition:width 0.4s ease;
-}
-.nav-links a:hover::after{width:100%}
-.nav-cta{
-  background:var(--green-deep);color:var(--cream);
-  padding:0.6rem 1.8rem;border:none;border-radius:0;
-  font-family:var(--font-sans);font-size:0.8rem;letter-spacing:0.2em;
-  text-transform:uppercase;cursor:none;
-  transition:all 0.4s ease;
-  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);
-  text-decoration:none;display:inline-block;
-}
-.nav-cta:hover{background:var(--green-sage);letter-spacing:0.3em}
+
+/* OVERLAY */
+.ov2{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:149;opacity:0;visibility:hidden;transition:all .35s;backdrop-filter:blur(4px)}
+.ov2.sh{opacity:1;visibility:visible}
 
 /* HERO */
-.hero{
-  min-height:100vh;position:relative;
-  display:flex;align-items:center;
-  overflow:hidden;
-}
-.hero-bg{
-  position:absolute;inset:0;
-  background:linear-gradient(135deg,var(--green-deep) 0%,var(--green-mid) 40%,var(--green-sage) 100%);
-}
-.hero-orbs{position:absolute;inset:0;overflow:hidden}
-.orb{
-  position:absolute;border-radius:50%;
-  background:radial-gradient(circle,rgba(201,168,76,0.2),transparent 70%);
-  animation:orb-float ease-in-out infinite;
-}
-@keyframes orb-float{
-  0%,100%{transform:translateY(0) scale(1)}
-  50%{transform:translateY(-40px) scale(1.1)}
-}
-.hero-grid{
-  position:absolute;inset:0;
-  background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
-  background-size:60px 60px;
-  animation:grid-move 20s linear infinite;
-}
-@keyframes grid-move{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.hero{min-height:100svh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}
+.hl{background:linear-gradient(145deg,var(--g1) 0%,var(--g2) 55%,#43a047 100%);display:flex;flex-direction:column;justify-content:center;padding:clamp(5rem,10vw,9rem) var(--pad) clamp(3.5rem,7vw,6rem);position:relative;overflow:hidden}
+.hmesh{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:clamp(28px,5vw,52px) clamp(28px,5vw,52px);animation:meshmv 30s linear infinite;pointer-events:none}
+@keyframes meshmv{to{background-position:52px 52px}}
+.hrings{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hring{position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.07);animation:ringex 7s ease-out infinite}
+@keyframes ringex{0%{transform:scale(.2);opacity:.7}100%{transform:scale(3.5);opacity:0}}
+.hl::before{content:'🍃';position:absolute;font-size:clamp(7rem,18vw,20rem);opacity:.04;top:-1rem;right:-2rem;animation:lfsw 18s ease-in-out infinite;pointer-events:none}
+.hl::after{content:'🌿';position:absolute;font-size:clamp(5rem,12vw,13rem);opacity:.05;bottom:1rem;left:-1rem;animation:lfsw 22s ease-in-out infinite reverse;animation-delay:-6s;pointer-events:none}
+@keyframes lfsw{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg) scale(1.05)}}
+.htag{display:flex;align-items:center;gap:.65rem;color:var(--gold);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;margin-bottom:1.5rem;opacity:0;animation:su .8s var(--ease) .4s forwards}
+.htag::before{content:'';width:30px;height:1px;background:var(--gold);flex-shrink:0}
+.hh1{font-family:var(--serif);font-size:clamp(2.5rem,5.5vw,5.5rem);font-weight:300;line-height:1.07;color:var(--w);margin-bottom:1.3rem;opacity:0;animation:su 1s var(--ease) .6s forwards}
+.hh1 em{color:var(--gold);font-style:italic;font-weight:400}
+.hp{color:rgba(255,255,255,.67);line-height:1.85;font-size:clamp(.83rem,1.8vw,.97rem);max-width:420px;margin-bottom:2.5rem;opacity:0;animation:su .8s var(--ease) .85s forwards}
+.hbtns{display:flex;gap:1rem;flex-wrap:wrap;opacity:0;animation:su .8s var(--ease) 1.05s forwards}
+.hsc{position:absolute;bottom:1.6rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;opacity:0;animation:fi .8s ease 1.8s forwards}
+.hsc span{writing-mode:vertical-rl;font-size:.6rem;letter-spacing:.24em;color:rgba(255,255,255,.38);text-transform:uppercase}
+.scl{width:1px;height:48px;background:linear-gradient(var(--gold),transparent);animation:scla 2s ease infinite}
+@keyframes scla{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.hr{position:relative;overflow:hidden;background:var(--gt)}
+.hr img{width:100%;height:100%;object-fit:cover;transition:transform 10s ease}
+.hr:hover img{transform:scale(1.06)}
+.hrov{position:absolute;inset:0;background:linear-gradient(90deg,rgba(27,94,32,.25),transparent)}
+.hbadge{position:absolute;bottom:clamp(1rem,3vw,2.5rem);left:clamp(.8rem,3vw,2.5rem);background:var(--w);padding:clamp(.8rem,2vw,1.1rem) clamp(1rem,2.5vw,1.5rem);box-shadow:0 20px 60px rgba(0,0,0,.15);display:flex;align-items:center;gap:.85rem;opacity:0;animation:su .8s var(--ease) 1.3s forwards}
+.hbnum{font-family:var(--serif);font-size:clamp(1.8rem,3.5vw,2.4rem);font-weight:600;color:var(--g1);line-height:1;background:linear-gradient(90deg,var(--gold),#fff176,var(--gold));background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gm 3s linear infinite}
+@keyframes gm{to{background-position:200%}}
+.hbtxt{font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+@keyframes su{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.hr{display:none}.hl{min-height:92svh;padding-top:5.5rem}}
 
-.hero-content{
-  position:relative;z-index:2;
-  padding:0 8rem;max-width:800px;
-}
-.hero-tag{
-  display:inline-flex;align-items:center;gap:0.6rem;
-  color:var(--gold-light);font-size:0.75rem;letter-spacing:0.3em;text-transform:uppercase;
-  margin-bottom:2rem;
-  opacity:0;transform:translateY(20px);animation:fade-up 0.8s ease 0.3s forwards;
-}
-.hero-tag::before{content:'';width:40px;height:1px;background:var(--gold)}
-.hero-h1{
-  font-family:var(--font-serif);
-  font-size:clamp(3.5rem,7vw,6rem);
-  font-weight:300;line-height:1.05;
-  color:var(--cream);margin-bottom:1.5rem;
-  opacity:0;transform:translateY(30px);animation:fade-up 1s ease 0.5s forwards;
-}
-.hero-h1 em{color:var(--gold);font-style:italic}
-.hero-sub{
-  font-size:1rem;color:rgba(250,246,238,0.7);
-  line-height:1.8;max-width:460px;margin-bottom:3rem;
-  opacity:0;transform:translateY(20px);animation:fade-up 0.8s ease 0.8s forwards;
-}
-.hero-btns{
-  display:flex;gap:1.2rem;
-  opacity:0;transform:translateY(20px);animation:fade-up 0.8s ease 1s forwards;
-}
-.btn-primary{
-  background:var(--gold);color:var(--green-deep);
-  padding:1rem 2.5rem;border:none;
-  font-family:var(--font-sans);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;
-  cursor:none;font-weight:500;
-  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);
-  transition:all 0.4s ease;position:relative;overflow:hidden;
-}
-.btn-primary::after{
-  content:'';position:absolute;inset:0;
-  background:rgba(255,255,255,0.2);transform:translateX(-100%);
-  transition:transform 0.4s ease;
-}
-.btn-primary:hover::after{transform:translateX(0)}
-.btn-secondary{
-  background:transparent;color:var(--cream);
-  padding:1rem 2.5rem;border:1px solid rgba(255,255,255,0.3);
-  font-family:var(--font-sans);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;
-  cursor:none;transition:all 0.4s ease;
-}
-.btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
-
-.hero-scroll{
-  position:absolute;bottom:3rem;left:50%;transform:translateX(-50%);
-  z-index:2;display:flex;flex-direction:column;align-items:center;gap:0.5rem;
-  opacity:0;animation:fade-in 1s ease 1.5s forwards;
-}
-.hero-scroll span{color:rgba(250,246,238,0.5);font-size:0.7rem;letter-spacing:0.3em;text-transform:uppercase}
-.scroll-line{width:1px;height:60px;background:linear-gradient(var(--gold),transparent);animation:scroll-anim 2s ease infinite}
-@keyframes scroll-anim{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
-
-.hero-float-img{
-  position:absolute;right:6%;top:50%;transform:translateY(-50%);
-  width:42%;z-index:2;
-  opacity:0;animation:fade-in 1.2s ease 0.8s forwards;
-}
-.hero-float-img img{width:100%;border-radius:2px;box-shadow:0 60px 120px rgba(0,0,0,0.5)}
-.hero-float-badge{
-  position:absolute;bottom:-20px;left:-30px;
-  background:var(--gold);color:var(--green-deep);
-  padding:1.2rem 1.8rem;
-  font-family:var(--font-serif);
-}
-.hero-float-badge .num{font-size:2.5rem;font-weight:600;display:block;line-height:1}
-.hero-float-badge .label{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase}
-
-@keyframes fade-up{to{opacity:1;transform:translateY(0)}}
-@keyframes fade-in{to{opacity:1}}
+/* BUTTONS */
+.bg{background:var(--gold);color:var(--g1);padding:.82rem clamp(1.3rem,3vw,2.1rem);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500;border:none;clip-path:polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,0 100%);position:relative;overflow:hidden;transition:background .3s,transform .2s;cursor:pointer}
+.bg::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.22);transform:translateX(-100%);transition:transform .4s var(--ease)}
+.bg:hover{background:var(--gd);transform:translateY(-2px)}
+.bg:hover::after{transform:none}
+.bow{background:transparent;color:var(--w);padding:.82rem clamp(1.3rem,3vw,2.1rem);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;border:1px solid rgba(255,255,255,.35);transition:all .3s;cursor:pointer}
+.bow:hover{border-color:var(--gold);color:var(--gold)}
 
 /* MARQUEE */
-.marquee-section{
-  background:var(--green-deep);padding:1.2rem 0;overflow:hidden;
-  position:relative;z-index:1;
-}
-.marquee-track{
-  display:flex;gap:0;
-  animation:marquee 25s linear infinite;
-  width:max-content;
-}
-.marquee-item{
-  white-space:nowrap;padding:0 3rem;
-  font-family:var(--font-serif);font-size:1.1rem;font-style:italic;
-  color:var(--gold-light);letter-spacing:0.05em;
-  display:flex;align-items:center;gap:1.5rem;
-}
-.marquee-item::after{content:'✦';color:var(--gold);font-size:0.6rem;font-style:normal}
-@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.mq{background:var(--g2);padding:.88rem 0;overflow:hidden}
+.mqt{display:flex;width:max-content;animation:mqr 30s linear infinite}
+.mqt:hover{animation-play-state:paused}
+.mqi{white-space:nowrap;padding:0 2rem;display:flex;align-items:center;gap:1.3rem;font-family:var(--serif);font-size:clamp(.88rem,2vw,1.07rem);font-style:italic;color:rgba(255,255,255,.74);letter-spacing:.04em}
+.mqi::after{content:'✦';font-size:.53rem;font-style:normal;color:var(--gold);opacity:.8}
+@keyframes mqr{to{transform:translateX(-50%)}}
 
-/* SECTIONS COMMON */
-section{position:relative;z-index:1}
-.reveal{opacity:0;transform:translateY(40px);transition:all 0.9s cubic-bezier(0.25,0.46,0.45,0.94)}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.reveal-left{opacity:0;transform:translateX(-50px);transition:all 1s cubic-bezier(0.25,0.46,0.45,0.94)}
-.reveal-left.visible{opacity:1;transform:translateX(0)}
-.reveal-right{opacity:0;transform:translateX(50px);transition:all 1s cubic-bezier(0.25,0.46,0.45,0.94)}
-.reveal-right.visible{opacity:1;transform:translateX(0)}
+/* SECTION COMMONS */
+.sec{position:relative;z-index:1}
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
+.eye{display:inline-flex;align-items:center;gap:.62rem;color:var(--g2);font-size:.67rem;letter-spacing:.28em;text-transform:uppercase;font-weight:500;margin-bottom:.85rem}
+.eye::before{content:'';width:25px;height:1.5px;background:var(--g2)}
+h2.sh{font-family:var(--serif);font-size:clamp(1.9rem,4vw,3.4rem);font-weight:300;color:var(--g1);line-height:1.1}
+h2.sh em{font-style:italic;color:var(--gd)}
+/* reveal */
+.rv{opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rl{opacity:0;transform:translateX(-38px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.rr{opacity:0;transform:translateX(38px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.v{opacity:1!important;transform:none!important}
+
+/* STATS BAR */
+.stbar{background:var(--g1);padding:clamp(2rem,5vw,3.5rem) var(--pad);display:grid;grid-template-columns:repeat(4,1fr);position:relative;overflow:hidden}
+.stbar::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(249,168,37,.06),transparent 70%);pointer-events:none}
+.stbi{text-align:center;padding:1.4rem .8rem;border-right:1px solid rgba(255,255,255,.08);transition:background .3s,transform .3s var(--spring)}
+.stbi:last-child{border:none}
+.stbi:hover{background:rgba(255,255,255,.05);transform:translateY(-4px)}
+.stbn{font-family:var(--serif);font-size:clamp(1.9rem,4vw,3rem);font-weight:300;color:var(--gold);line-height:1;display:flex;align-items:flex-start;justify-content:center;gap:.1rem}
+.stbn sup{font-size:clamp(.9rem,2vw,1.4rem);margin-top:.3rem}
+.stbl{font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;color:rgba(255,255,255,.42);margin-top:.45rem}
+@media(max-width:600px){.stbar{grid-template-columns:repeat(2,1fr)}.stbi{border-right:none;border-bottom:1px solid rgba(255,255,255,.07)}}
 
 /* CATEGORIES */
-.categories{padding:8rem 6rem;background:var(--cream)}
-.section-label{
-  display:inline-flex;align-items:center;gap:0.8rem;
-  color:var(--green-sage);font-size:0.7rem;letter-spacing:0.35em;text-transform:uppercase;
-  margin-bottom:1.2rem;font-weight:500;
-}
-.section-label::before{content:'';width:30px;height:1px;background:var(--green-sage)}
-.section-h2{
-  font-family:var(--font-serif);font-size:clamp(2.5rem,4vw,4rem);
-  font-weight:300;line-height:1.1;color:var(--green-deep);
-  margin-bottom:4rem;max-width:500px;
-}
-.section-h2 em{color:var(--gold);font-style:italic}
-
-.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
-.cat-card{
-  position:relative;overflow:hidden;aspect-ratio:3/4;cursor:none;
-  background:var(--green-mid);
-}
-.cat-card::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,transparent 40%,rgba(10,42,20,0.95) 100%);
-  z-index:1;transition:opacity 0.5s;
-}
-.cat-img-placeholder{
-  width:100%;height:100%;
-  display:flex;align-items:center;justify-content:center;
-  transition:transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
-  font-size:5rem;
-}
-.cat-card:hover .cat-img-placeholder{transform:scale(1.08)}
-.cat-content{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:2.5rem;z-index:2;transform:translateY(20px);
-  transition:transform 0.5s ease;
-}
-.cat-card:hover .cat-content{transform:translateY(0)}
-.cat-num{
-  font-family:var(--font-serif);font-size:0.75rem;
-  color:var(--gold);letter-spacing:0.25em;margin-bottom:0.5rem;
-}
-.cat-name{
-  font-family:var(--font-serif);font-size:1.8rem;font-weight:300;
-  color:var(--cream);line-height:1.2;margin-bottom:0.6rem;
-}
-.cat-desc{
-  font-size:0.8rem;color:rgba(250,246,238,0.65);line-height:1.6;
-  opacity:0;transform:translateY(10px);
-  transition:all 0.4s ease 0.1s;
-}
-.cat-card:hover .cat-desc{opacity:1;transform:translateY(0)}
-.cat-arrow{
-  display:inline-flex;align-items:center;gap:0.5rem;
-  color:var(--gold);font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;
-  margin-top:1rem;opacity:0;transition:opacity 0.4s ease 0.15s;
-}
-.cat-card:hover .cat-arrow{opacity:1}
-.cat-arrow svg{transition:transform 0.3s;width:16px;height:16px}
-.cat-card:hover .cat-arrow svg{transform:translateX(6px)}
-
-.cat-card.accent{background:var(--gold)}
-.cat-card.accent .cat-name,.cat-card.accent .cat-num{color:var(--green-deep)}
-.cat-card.accent .cat-desc{color:rgba(10,42,20,0.75)}
-.cat-card.accent .cat-arrow{color:var(--green-deep)}
+.cats{padding:clamp(3.5rem,8vw,8rem) 0;background:var(--w)}
+.cats .wrap>div:first-child{margin-bottom:2.8rem}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.cc{position:relative;overflow:hidden;aspect-ratio:.75;background:var(--g1);cursor:default}
+.cc img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease),filter .6s;will-change:transform}
+.cc:hover img{transform:scale(1.12);filter:brightness(.65)}
+.ccmask{position:absolute;inset:0;background:linear-gradient(180deg,transparent 28%,rgba(10,35,12,.95) 100%);z-index:1;transition:background .5s}
+.cc:hover .ccmask{background:linear-gradient(180deg,transparent 18%,rgba(10,35,12,.98) 100%)}
+.cctag{position:absolute;top:clamp(.7rem,2vw,1.1rem);right:clamp(.7rem,2vw,1.1rem);background:var(--gold);color:var(--g1);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.26rem .68rem;font-weight:600;z-index:2;transform:translateY(-8px);opacity:0;transition:all .35s var(--ease)}
+.cc:hover .cctag{transform:none;opacity:1}
+.ccb{position:absolute;bottom:0;left:0;right:0;padding:clamp(1rem,3vw,2rem);z-index:2;transform:translateY(10px);transition:transform .5s var(--ease)}
+.cc:hover .ccb{transform:none}
+.ccn{font-size:.6rem;letter-spacing:.26em;color:var(--gold);font-weight:500;text-transform:uppercase;margin-bottom:.4rem}
+.cct{font-family:var(--serif);font-size:clamp(1.3rem,2.8vw,2rem);font-weight:300;color:var(--w);line-height:1.15;margin-bottom:.4rem}
+.ccp{font-size:clamp(.7rem,1.5vw,.81rem);color:rgba(255,255,255,.57);line-height:1.65;opacity:0;transform:translateY(8px);transition:all .4s ease .1s;max-width:280px}
+.cc:hover .ccp{opacity:1;transform:none}
+.cca{display:inline-flex;align-items:center;gap:.4rem;color:var(--gold);font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-top:.75rem;opacity:0;transition:opacity .35s ease .15s}
+.cc:hover .cca{opacity:1}
+.cca svg{width:13px;height:13px;transition:transform .3s}
+.cc:hover .cca svg{transform:translateX(5px)}
+@media(max-width:680px){.cgrid{grid-template-columns:1fr}.cc{aspect-ratio:1.2}}
 
 /* ABOUT */
-.about{padding:8rem 6rem;background:var(--green-deep);position:relative;overflow:hidden}
-.about-bg-text{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  font-family:var(--font-serif);font-size:20rem;font-weight:300;
-  color:rgba(255,255,255,0.02);white-space:nowrap;pointer-events:none;
-  letter-spacing:-0.05em;line-height:1;
-}
-.about-inner{display:grid;grid-template-columns:1fr 1fr;gap:8rem;align-items:center}
-.about-visual{position:relative}
-.about-img-wrap{
-  position:relative;aspect-ratio:4/5;
-  background:var(--green-mid);overflow:hidden;
-  clip-path:polygon(0 0,calc(100% - 30px) 0,100% 30px,100% 100%,30px 100%,0 calc(100% - 30px));
-}
-.about-img-emoji{
-  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-  font-size:8rem;
-}
-.about-badge{
-  position:absolute;top:-20px;right:-20px;
-  width:130px;height:130px;border-radius:50%;
-  background:var(--gold);
-  display:flex;align-items:center;justify-content:center;flex-direction:column;
-  animation:spin-badge 20s linear infinite;
-}
-@keyframes spin-badge{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.about-badge-text{
-  font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;
-  color:var(--green-deep);font-weight:500;text-align:center;line-height:1.6;
-  padding:0 15px;
-}
-.about-stats{
-  display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2.5rem;
-}
-.stat{
-  padding:1.5rem;border:1px solid rgba(255,255,255,0.08);
-  transition:border-color 0.3s,transform 0.3s;
-}
-.stat:hover{border-color:var(--gold);transform:translateY(-4px)}
-.stat-num{
-  font-family:var(--font-serif);font-size:2.8rem;font-weight:300;
-  color:var(--gold);line-height:1;
-}
-.stat-label{color:rgba(250,246,238,0.5);font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;margin-top:0.4rem}
-
-.about-text .section-label::before{background:var(--gold)}
-.about-text .section-label{color:var(--gold)}
-.about-text .section-h2{color:var(--cream);margin-bottom:2rem}
-.about-text p{
-  color:rgba(250,246,238,0.65);line-height:1.9;font-size:0.95rem;
-  margin-bottom:1.5rem;
-}
-.about-features{margin-top:2rem;display:flex;flex-direction:column;gap:1rem}
-.feature-item{
-  display:flex;align-items:flex-start;gap:1rem;padding:1rem;
-  border-left:2px solid transparent;transition:all 0.3s;
-}
-.feature-item:hover{border-left-color:var(--gold);background:rgba(255,255,255,0.04)}
-.feature-icon{
-  width:36px;height:36px;border-radius:50%;
-  background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);
-  display:flex;align-items:center;justify-content:center;
-  font-size:1rem;flex-shrink:0;
-  transition:background 0.3s;
-}
-.feature-item:hover .feature-icon{background:rgba(201,168,76,0.25)}
-.feature-text h4{color:var(--cream);font-size:0.9rem;font-weight:500;margin-bottom:0.3rem}
-.feature-text p{color:rgba(250,246,238,0.5);font-size:0.8rem;margin:0;line-height:1.6}
+.about{padding:clamp(3.5rem,8vw,8rem) 0;background:var(--g1);overflow:hidden;position:relative}
+.abgw{position:absolute;font-family:var(--serif);font-size:clamp(6rem,16vw,22rem);font-weight:300;color:rgba(255,255,255,.022);top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none}
+.abin{display:grid;grid-template-columns:5fr 6fr;gap:clamp(2rem,6vw,7rem);align-items:center}
+.abvis{position:relative}
+.abframe{position:relative;clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));overflow:hidden;aspect-ratio:.85}
+.abframe img{width:100%;height:100%;object-fit:cover;transition:transform 8s ease}
+.abframe:hover img{transform:scale(1.05)}
+.abfov{position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(27,94,32,.55) 100%)}
+.abspin{position:absolute;top:-15px;right:-15px;width:clamp(85px,11vw,122px);height:clamp(85px,11vw,122px);border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;animation:sp 24s linear infinite;box-shadow:0 8px 28px rgba(249,168,37,.35)}
+@keyframes sp{to{transform:rotate(360deg)}}
+.abspin p{font-size:clamp(.46rem,.85vw,.56rem);letter-spacing:.15em;text-transform:uppercase;color:var(--g1);font-weight:600;text-align:center;padding:0 9px;line-height:1.75}
+.abst{display:grid;grid-template-columns:1fr 1fr;gap:.95rem;margin-top:1.7rem}
+.ast{border:1px solid rgba(255,255,255,.1);padding:1.15rem 1.2rem;transition:border-color .3s,transform .35s var(--spring);cursor:default}
+.ast:hover{border-color:var(--gold);transform:translateY(-5px) scale(1.02)}
+.astn{font-family:var(--serif);font-size:clamp(1.9rem,3.5vw,2.8rem);font-weight:300;color:var(--gold);line-height:1;display:flex;align-items:flex-start}
+.astn sup{font-size:clamp(.85rem,1.7vw,1.4rem);margin-top:.25rem}
+.astl{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:.35rem}
+/* about text */
+.abtxt .eye{color:var(--gold)}.abtxt .eye::before{background:var(--gold)}
+.abtxt .sh{color:var(--w)}.abtxt .sh em{color:var(--gold)}
+.abp{color:rgba(255,255,255,.6);line-height:1.9;font-size:clamp(.81rem,1.8vw,.94rem);margin-bottom:1.1rem}
+.abp strong{color:var(--gold);font-weight:600}
+.abfeats{margin-top:1.5rem;display:flex;flex-direction:column;gap:.75rem}
+.aft{display:flex;align-items:flex-start;gap:.85rem;padding:.85rem .95rem;border-left:2px solid transparent;transition:all .3s}
+.aft:hover{border-left-color:var(--gold);background:rgba(255,255,255,.04);transform:translateX(4px)}
+.aftic{width:34px;height:34px;border-radius:50%;background:rgba(249,168,37,.11);border:1px solid rgba(249,168,37,.26);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;transition:background .3s,transform .3s}
+.aft:hover .aftic{background:rgba(249,168,37,.22);transform:scale(1.1)}
+.aft h4{color:var(--w);font-size:.85rem;font-weight:500;margin-bottom:.2rem}
+.aft p{color:rgba(255,255,255,.43);font-size:.76rem;line-height:1.6}
+.bgo{display:inline-block;margin-top:1.8rem;border:1.5px solid var(--gold);color:var(--gold);padding:.78rem 1.8rem;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:all .35s;position:relative;overflow:hidden;cursor:pointer}
+.bgo::before{content:'';position:absolute;inset:0;background:var(--gold);transform:translateX(-100%);transition:transform .35s var(--ease);z-index:0}
+.bgo span{position:relative;z-index:1;transition:color .35s}
+.bgo:hover::before{transform:none}
+.bgo:hover span{color:var(--g1)}
+@media(max-width:900px){.abin{grid-template-columns:1fr;gap:2.5rem}.abvis{max-width:440px;margin:0 auto}}
 
 /* PRODUCTS */
-.products{padding:8rem 6rem;background:var(--cream-warm)}
-.products-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4rem}
-.products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
-.product-card{
-  background:var(--cream);position:relative;overflow:hidden;
-  cursor:none;transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94),box-shadow 0.5s;
-  border:1px solid rgba(61,122,74,0.1);
-}
-.product-card:hover{transform:translateY(-12px);box-shadow:0 40px 80px rgba(10,42,20,0.12)}
-.product-img{
-  aspect-ratio:1;background:linear-gradient(135deg,var(--green-pale),var(--cream));
-  display:flex;align-items:center;justify-content:center;
-  font-size:5rem;position:relative;overflow:hidden;
-}
-.product-glow{
-  position:absolute;inset:0;
-  background:radial-gradient(circle at 50% 80%,rgba(122,184,127,0.3),transparent);
-  opacity:0;transition:opacity 0.5s;
-}
-.product-card:hover .product-glow{opacity:1}
-.product-info{padding:1.8rem}
-.product-cat{
-  font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;
-  color:var(--green-sage);font-weight:500;margin-bottom:0.5rem;
-}
-.product-name{
-  font-family:var(--font-serif);font-size:1.4rem;font-weight:400;
-  color:var(--green-deep);margin-bottom:0.5rem;line-height:1.2;
-}
-.product-desc{font-size:0.8rem;color:var(--text-mid);line-height:1.7;margin-bottom:1.2rem}
-.product-footer{display:flex;justify-content:space-between;align-items:center}
-.product-tag{
-  background:var(--green-deep);color:var(--cream);
-  padding:0.35rem 0.9rem;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;
-}
-.product-arrow{
-  width:36px;height:36px;border:1px solid var(--green-light);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--green-sage);transition:all 0.3s;font-size:1rem;
-}
-.product-card:hover .product-arrow{background:var(--green-deep);border-color:var(--green-deep);color:var(--cream)}
+.prods{padding:clamp(3.5rem,8vw,8rem) 0;background:var(--cr)}
+.phd{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:2.8rem}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(.9rem,2.5vw,1.8rem)}
+.pc{background:var(--w);border:1px solid rgba(46,125,50,.08);overflow:hidden;transition:transform .55s var(--ease),box-shadow .55s;position:relative;cursor:default}
+.pc::before{content:'';position:absolute;inset:0;box-shadow:0 40px 80px rgba(27,94,32,.13);opacity:0;transition:opacity .5s;z-index:0}
+.pc:hover{transform:translateY(-16px)}
+.pc:hover::before{opacity:1}
+.pimg{aspect-ratio:1;overflow:hidden;position:relative;background:var(--gp);display:flex;align-items:center;justify-content:center}
+.pimg img{width:80%;height:80%;object-fit:contain;transition:transform .7s var(--ease)}
+.pc:hover .pimg img{transform:scale(1.1) rotate(-2deg)}
+.pgl{position:absolute;inset:0;background:radial-gradient(circle at 50% 80%,rgba(46,125,50,.18),transparent);opacity:0;transition:opacity .5s}
+.pc:hover .pgl{opacity:1}
+.pbdg{position:absolute;top:.85rem;left:.85rem;background:var(--g2);color:var(--w);font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;padding:.26rem .72rem;font-weight:500;animation:bdb 2.5s ease-in-out infinite;z-index:2}
+@keyframes bdb{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.pbd{padding:clamp(1.1rem,3vw,1.75rem)}
+.pcat{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--g2);font-weight:500;margin-bottom:.38rem}
+.pnm{font-family:var(--serif);font-size:clamp(1.2rem,2.5vw,1.52rem);font-weight:400;color:var(--g1);line-height:1.2;margin-bottom:.52rem}
+.pds{font-size:.78rem;color:var(--mute);line-height:1.7;margin-bottom:1.1rem}
+.pft{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.55rem}
+.ppr{font-family:var(--serif);font-size:1.38rem;color:var(--g1);font-weight:600}
+.ppr span{font-size:.7rem;font-family:var(--sans);font-weight:400;color:var(--mute);letter-spacing:.06em}
+.pbtn{background:var(--g2);color:var(--w);border:none;padding:.48rem 1.05rem;font-size:.69rem;letter-spacing:.12em;text-transform:uppercase;transition:background .3s,transform .2s;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,0 100%);text-decoration:none;display:inline-block;cursor:pointer}
+.pbtn:hover{background:var(--g1);transform:translateY(-2px)}
+/* featured */
+.pc.feat{grid-column:1/-1;display:grid;grid-template-columns:clamp(180px,28%,360px) 1fr;background:var(--g1)}
+.pc.feat .pimg{aspect-ratio:auto;min-height:clamp(260px,35vw,360px);background:linear-gradient(135deg,rgba(46,125,50,.28),rgba(249,168,37,.1))}
+.pc.feat .pcat{color:var(--gold)}.pc.feat .pnm{color:var(--w);font-size:clamp(1.5rem,3vw,2.1rem)}
+.pc.feat .ppr{color:var(--gold)}.pc.feat .pds{color:rgba(255,255,255,.6)}
+.blist{margin:.85rem 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.42rem}
+.bi{display:flex;align-items:flex-start;gap:.42rem;font-size:.76rem;color:rgba(255,255,255,.67);line-height:1.5}
+.bi::before{content:'✓';color:var(--gold);font-weight:700;flex-shrink:0}
+@media(max-width:900px){.pgrid{grid-template-columns:1fr 1fr}.pc.feat{grid-template-columns:1fr}}
+@media(max-width:520px){.pgrid{grid-template-columns:1fr}.pc.feat{grid-column:auto}.blist{grid-template-columns:1fr}}
 
-/* NATURE BANNER */
-.nature-banner{
-  padding:7rem 6rem;background:var(--green-sage);
-  position:relative;overflow:hidden;
-  display:flex;align-items:center;justify-content:space-between;gap:4rem;
-}
-.nature-banner::before{
-  content:'';position:absolute;inset:0;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
-  pointer-events:none;
-}
-.banner-left{flex:1}
-.banner-left .section-h2{color:var(--cream);margin-bottom:1.5rem}
-.banner-left p{color:rgba(250,246,238,0.8);line-height:1.8;max-width:480px}
-.banner-right{flex-shrink:0;text-align:center}
-.nature-circle{
-  width:280px;height:280px;border-radius:50%;
-  border:2px solid rgba(255,255,255,0.3);
-  display:flex;align-items:center;justify-content:center;
-  position:relative;
-  animation:pulse-ring 3s ease-in-out infinite;
-}
-@keyframes pulse-ring{
-  0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0.1),0 0 0 0 rgba(255,255,255,0.05)}
-  50%{box-shadow:0 0 0 20px rgba(255,255,255,0.05),0 0 0 40px rgba(255,255,255,0.02)}
-}
-.nature-circle-inner{
-  width:200px;height:200px;border-radius:50%;
-  background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);
-  display:flex;align-items:center;justify-content:center;flex-direction:column;
-  border:1px solid rgba(255,255,255,0.2);
-}
-.nature-circle-inner span{font-size:4rem}
-.nature-circle-inner p{
-  font-family:var(--font-serif);color:var(--cream);
-  font-size:0.8rem;letter-spacing:0.1em;margin-top:0.5rem;text-align:center;
-  padding:0 1rem;
-}
+/* BANNER */
+.banner{position:relative;overflow:hidden;background:var(--g2);min-height:420px;display:flex;align-items:center;justify-content:center}
+.banbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.3}
+.banorb{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(249,168,37,.2),transparent);pointer-events:none;animation:orbf ease-in-out infinite}
+@keyframes orbf{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-28px) scale(1.07)}}
+.banb{position:relative;z-index:2;text-align:center;padding:clamp(2.5rem,7vw,5.5rem) var(--pad);max-width:660px}
+.banb .eye{color:var(--gold);justify-content:center}.banb .eye::before{background:var(--gold)}
+.banh2{font-family:var(--serif);font-size:clamp(2rem,5vw,4rem);font-weight:300;color:var(--w);line-height:1.1;margin-bottom:1rem}
+.banh2 em{font-style:italic;color:var(--gold)}
+.banp{color:rgba(255,255,255,.72);line-height:1.8;font-size:clamp(.82rem,1.8vw,.96rem);margin-bottom:2.1rem}
+/* pulse ring */
+.prw{position:absolute;right:clamp(1.5rem,7vw,8%);top:50%;transform:translateY(-50%)}
+.pr{width:clamp(130px,17vw,215px);height:clamp(130px,17vw,215px);border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;animation:pls 3.5s ease-in-out infinite}
+@keyframes pls{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.06)}50%{box-shadow:0 0 0 22px rgba(255,255,255,.03),0 0 0 44px rgba(255,255,255,.015)}}
+.pri{width:clamp(88px,11vw,142px);height:clamp(88px,11vw,142px);border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;flex-direction:column}
+.pri span{font-size:clamp(1.8rem,3.5vw,3rem)}
+.pri p{font-family:var(--serif);font-size:clamp(.58rem,1.1vw,.7rem);color:rgba(255,255,255,.74);text-align:center;padding:0 .7rem;margin-top:.3rem;line-height:1.5}
+@media(max-width:680px){.prw{display:none}}
+
+/* PROCESS */
+.proc{padding:clamp(3.5rem,8vw,7rem) 0;background:var(--gt)}
+.procg{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(.9rem,2.5vw,1.9rem);margin-top:2.8rem;counter-reset:step}
+.procc{background:var(--w);padding:clamp(1.3rem,3vw,2rem);border:1px solid rgba(46,125,50,.1);position:relative;overflow:hidden;transition:transform .45s var(--spring),box-shadow .45s,border-color .3s;counter-increment:step}
+.procc::before{content:counter(step,decimal-leading-zero);position:absolute;top:-.5rem;right:.7rem;font-family:var(--serif);font-size:4rem;font-weight:300;color:rgba(46,125,50,.06);line-height:1;pointer-events:none;transition:color .3s}
+.procc:hover{transform:translateY(-10px);box-shadow:0 24px 60px rgba(27,94,20,.1);border-color:var(--gl)}
+.procc:hover::before{color:rgba(46,125,50,.13)}
+.procic{font-size:2.1rem;margin-bottom:.9rem;display:block;animation:bcic 3s ease-in-out infinite}
+@keyframes bcic{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.procc:nth-child(2) .procic{animation-delay:-.5s}
+.procc:nth-child(3) .procic{animation-delay:-1s}
+.procc:nth-child(4) .procic{animation-delay:-1.5s}
+.procc h3{font-family:var(--serif);font-size:clamp(1rem,2vw,1.25rem);color:var(--g1);margin-bottom:.45rem;font-weight:400}
+.procc p{font-size:.78rem;color:var(--mid);line-height:1.65}
+@media(max-width:780px){.procg{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:420px){.procg{grid-template-columns:1fr}}
 
 /* TESTIMONIALS */
-.testimonials{padding:8rem 6rem;background:var(--cream)}
-.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:4rem}
-.testi-card{
-  padding:2.5rem;border:1px solid rgba(61,122,74,0.12);
-  position:relative;transition:all 0.4s ease;
-}
-.testi-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--gold),var(--green-light));
-  transform:scaleX(0);transform-origin:left;
-  transition:transform 0.5s ease;
-}
-.testi-card:hover{background:var(--cream-warm);transform:translateY(-6px)}
-.testi-card:hover::before{transform:scaleX(1)}
-.testi-quote{
-  font-family:var(--font-serif);font-size:1.1rem;font-weight:300;
-  color:var(--green-deep);line-height:1.7;margin-bottom:2rem;font-style:italic;
-}
-.testi-quote::before{content:'"';font-size:4rem;color:var(--gold);line-height:0;vertical-align:-1.5rem;margin-right:0.3rem;font-style:normal}
-.testi-author{display:flex;align-items:center;gap:1rem}
-.testi-avatar{
-  width:44px;height:44px;border-radius:50%;
-  background:linear-gradient(135deg,var(--green-pale),var(--green-sage));
-  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
-  border:2px solid var(--gold-light);
-}
-.testi-name{font-size:0.85rem;font-weight:500;color:var(--green-deep)}
-.testi-role{font-size:0.75rem;color:var(--text-mid);margin-top:0.2rem}
-.stars{color:var(--gold);font-size:0.7rem;letter-spacing:0.1em;margin-bottom:1.2rem}
+.testi{padding:clamp(3.5rem,8vw,8rem) 0;background:var(--w)}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(.9rem,2.5vw,2rem);margin-top:2.8rem}
+.tc{padding:clamp(1.3rem,3vw,2.1rem);border:1px solid rgba(46,125,50,.1);position:relative;overflow:hidden;transition:transform .45s var(--ease),box-shadow .45s,background .3s;cursor:default}
+.tc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--g2),var(--gold));transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.tc:hover{transform:translateY(-8px);box-shadow:0 30px 70px rgba(27,94,32,.09);background:var(--gt)}
+.tc:hover::after{transform:scaleX(1)}
+.tcqbg{position:absolute;top:.4rem;right:.7rem;font-size:4.5rem;font-family:var(--serif);color:rgba(46,125,50,.05);line-height:1;pointer-events:none}
+.stars{color:var(--gold);font-size:.76rem;letter-spacing:.12em;margin-bottom:1rem}
+.tq{font-family:var(--serif);font-size:clamp(.93rem,2vw,1.07rem);font-weight:300;color:var(--g1);line-height:1.75;font-style:italic;margin-bottom:1.5rem}
+.tq::before{content:'"';font-size:2.8rem;color:var(--g2);opacity:.22;line-height:0;vertical-align:-1.1rem;margin-right:.2rem;font-style:normal}
+.ta{display:flex;align-items:center;gap:.8rem}
+.tav{width:38px;height:38px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);flex-shrink:0}
+.tav img{width:100%;height:100%;object-fit:cover}
+.tn{font-size:.8rem;font-weight:500;color:var(--g1)}
+.tr{font-size:.7rem;color:var(--mute);margin-top:.13rem}
+@media(max-width:780px){.tgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.tgrid{grid-template-columns:1fr}}
+
+/* OPPORTUNITY */
+.opp{padding:clamp(3.5rem,8vw,7rem) 0;background:var(--crw)}
+.oppin{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,7rem);align-items:center}
+.ocards{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.oc{background:var(--w);border:1px solid rgba(46,125,50,.1);padding:clamp(1.1rem,2.5vw,1.55rem);transition:all .35s var(--spring);cursor:default}
+.oc:hover{border-color:var(--g2);transform:translateY(-6px) scale(1.02);box-shadow:0 18px 45px rgba(27,94,32,.1)}
+.ocic{font-size:1.85rem;margin-bottom:.7rem;display:block;transition:transform .4s var(--spring)}
+.oc:hover .ocic{transform:scale(1.2) rotate(-5deg)}
+.oc h4{font-family:var(--serif);font-size:clamp(.95rem,1.9vw,1.18rem);color:var(--g1);margin-bottom:.38rem}
+.oc p{font-size:.76rem;color:var(--mid);line-height:1.65}
+@media(max-width:900px){.oppin{grid-template-columns:1fr;gap:2.5rem}}
+@media(max-width:430px){.ocards{grid-template-columns:1fr}}
 
 /* CONTACT */
-.contact{padding:8rem 6rem;background:var(--green-deep);display:grid;grid-template-columns:1fr 1fr;gap:8rem;align-items:center}
-.contact-info .section-h2{color:var(--cream);margin-bottom:2rem}
-.contact-info p{color:rgba(250,246,238,0.6);line-height:1.9;margin-bottom:2rem}
-.contact-detail{
-  display:flex;align-items:center;gap:1rem;padding:1.2rem 0;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-.contact-icon{
-  width:40px;height:40px;border:1px solid rgba(201,168,76,0.3);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--gold);font-size:1.1rem;flex-shrink:0;
-}
-.contact-detail-text span{display:block;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(250,246,238,0.4);margin-bottom:0.2rem}
-.contact-detail-text a{color:var(--cream);text-decoration:none;font-size:0.95rem;transition:color 0.3s}
-.contact-detail-text a:hover{color:var(--gold)}
+.contact{padding:clamp(3.5rem,8vw,8rem) 0;background:var(--g1)}
+.cin{display:grid;grid-template-columns:5fr 6fr;gap:clamp(2rem,6vw,7rem);align-items:start}
+.ci .eye{color:var(--gold)}.ci .eye::before{background:var(--gold)}
+.ci .sh{color:var(--w)}.ci .sh em{color:var(--gold)}
+.ci>p{color:rgba(255,255,255,.57);line-height:1.9;margin-bottom:1.7rem;font-size:.88rem}
+.cd{display:flex;align-items:flex-start;gap:.85rem;padding:.95rem 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.cdic{width:34px;height:34px;border:1px solid rgba(249,168,37,.32);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.92rem;transition:background .3s,transform .3s}
+.cd:hover .cdic{background:rgba(249,168,37,.12);transform:scale(1.1)}
+.cdl{font-size:.6rem;letter-spacing:.19em;text-transform:uppercase;color:rgba(255,255,255,.33);margin-bottom:.2rem}
+.cdv{color:rgba(255,255,255,.8);font-size:.87rem;text-decoration:none;transition:color .3s}
+.cdv:hover{color:var(--gold)}
+.cf{display:flex;flex-direction:column;gap:.95rem}
+.fg{position:relative}
+.fg input,.fg textarea,.fg select{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:.88rem 1rem;color:var(--w);font-family:var(--sans);font-size:.86rem;outline:none;transition:border-color .3s,background .3s;border-radius:0;appearance:none}
+.fg input::placeholder,.fg textarea::placeholder{color:rgba(255,255,255,.28)}
+.fg input:focus,.fg textarea:focus{border-color:var(--gold);background:rgba(255,255,255,.08)}
+.fg textarea{resize:none;height:116px;line-height:1.7}
+.fgl{position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.fg input:focus~.fgl,.fg textarea:focus~.fgl{transform:scaleX(1)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.95rem}
+.bsub{background:var(--gold);color:var(--g1);border:none;padding:.95rem;font-family:var(--sans);font-size:.76rem;letter-spacing:.2em;text-transform:uppercase;font-weight:500;transition:background .3s;position:relative;overflow:hidden;width:100%;cursor:pointer}
+.bsub::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.2);transform:translateX(-100%);transition:transform .4s}
+.bsub:hover{background:var(--gd)}
+.bsub:hover::after{transform:none}
+@media(max-width:900px){.cin{grid-template-columns:1fr;gap:2.5rem}}
+@media(max-width:480px){.frow{grid-template-columns:1fr}}
 
-.contact-form{display:flex;flex-direction:column;gap:1.2rem}
-.form-group{position:relative}
-.form-group input,.form-group textarea,.form-group select{
-  width:100%;background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1);
-  padding:1rem 1.2rem;color:var(--cream);font-family:var(--font-sans);
-  font-size:0.9rem;outline:none;transition:border-color 0.3s;
-  appearance:none;border-radius:0;
-}
-.form-group input::placeholder,.form-group textarea::placeholder{color:rgba(250,246,238,0.35)}
-.form-group input:focus,.form-group textarea:focus{border-color:var(--gold)}
-.form-group textarea{resize:none;height:140px;line-height:1.7}
-.form-line{
-  position:absolute;bottom:-1px;left:0;right:0;height:2px;
-  background:var(--gold);transform:scaleX(0);transform-origin:left;
-  transition:transform 0.4s ease;
-}
-.form-group input:focus~.form-line,.form-group textarea:focus~.form-line{transform:scaleX(1)}
-.btn-submit{
-  background:var(--gold);color:var(--green-deep);border:none;
-  padding:1.1rem;font-family:var(--font-sans);font-size:0.8rem;
-  letter-spacing:0.25em;text-transform:uppercase;cursor:none;font-weight:500;
-  transition:all 0.4s;position:relative;overflow:hidden;
-}
-.btn-submit::after{
-  content:'';position:absolute;inset:0;background:rgba(255,255,255,0.2);
-  transform:translateX(-100%);transition:transform 0.4s;
-}
-.btn-submit:hover::after{transform:translateX(0)}
+/* NEWSLETTER */
+.nl{background:var(--g2);padding:clamp(2.8rem,7vw,5rem) var(--pad);text-align:center;position:relative;overflow:hidden}
+.nl::before,.nl::after{content:'✦';position:absolute;font-size:7rem;opacity:.04;color:var(--gold);pointer-events:none}
+.nl::before{top:-.5rem;left:1.5rem}
+.nl::after{bottom:-.5rem;right:1.5rem}
+.nl h3{font-family:var(--serif);font-size:clamp(1.7rem,4vw,2.5rem);font-weight:300;color:var(--w);margin-bottom:.65rem}
+.nl h3 em{font-style:italic;color:var(--gold)}
+.nl p{color:rgba(255,255,255,.58);font-size:.87rem;margin-bottom:1.7rem}
+.nlf{display:flex;max-width:450px;margin:0 auto;flex-wrap:wrap;gap:0}
+.nlf input{flex:1;min-width:170px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-right:none;padding:.8rem 1.1rem;color:var(--w);font-family:var(--sans);font-size:.85rem;outline:none;border-radius:0}
+.nlf input::placeholder{color:rgba(255,255,255,.36)}
+.nlf button{background:var(--gold);color:var(--g1);border:none;padding:.8rem 1.5rem;font-size:.72rem;letter-spacing:.17em;text-transform:uppercase;font-weight:500;transition:background .3s;white-space:nowrap;cursor:pointer}
+.nlf button:hover{background:var(--gd)}
+@media(max-width:420px){.nlf{flex-direction:column}.nlf input{border-right:1px solid rgba(255,255,255,.2);border-bottom:none}.nlf button{width:100%}}
 
 /* FOOTER */
-footer{background:var(--text-dark);padding:5rem 6rem 2rem;position:relative;overflow:hidden}
-.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;margin-bottom:4rem}
-.footer-brand{}
-.footer-logo{
-  font-family:var(--font-serif);font-size:2.2rem;font-weight:300;
-  color:var(--cream);letter-spacing:0.1em;margin-bottom:1rem;display:block;
-}
-.footer-logo span{color:var(--gold)}
-.footer-tagline{color:rgba(250,246,238,0.4);font-size:0.85rem;line-height:1.7;max-width:260px}
-.footer-social{display:flex;gap:0.8rem;margin-top:1.5rem}
-.soc{
-  width:36px;height:36px;border:1px solid rgba(255,255,255,0.1);
-  display:flex;align-items:center;justify-content:center;
-  color:rgba(250,246,238,0.5);font-size:0.85rem;cursor:none;
-  transition:all 0.3s;text-decoration:none;
-}
-.soc:hover{border-color:var(--gold);color:var(--gold)}
-.footer-col h4{
-  color:var(--cream);font-size:0.75rem;letter-spacing:0.25em;
-  text-transform:uppercase;font-weight:500;margin-bottom:1.5rem;
-}
-.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:0.7rem}
-.footer-col a{
-  color:rgba(250,246,238,0.45);font-size:0.85rem;text-decoration:none;
-  transition:color 0.3s;display:flex;align-items:center;gap:0.4rem;
-}
-.footer-col a::before{content:'';width:0;height:1px;background:var(--gold);transition:width 0.3s}
-.footer-col a:hover{color:var(--gold)}
-.footer-col a:hover::before{width:14px}
-.footer-bottom{
-  border-top:1px solid rgba(255,255,255,0.06);padding-top:2rem;
-  display:flex;justify-content:space-between;align-items:center;
-}
-.footer-copy{color:rgba(250,246,238,0.3);font-size:0.8rem}
-.footer-legal{display:flex;gap:2rem}
-.footer-legal a{color:rgba(250,246,238,0.3);font-size:0.75rem;text-decoration:none;transition:color 0.3s}
-.footer-legal a:hover{color:var(--gold)}
+footer{background:var(--dark);padding:clamp(2.8rem,6vw,5rem) var(--pad) 1.8rem}
+.ft{display:grid;grid-template-columns:2.1fr 1fr 1fr 1fr;gap:clamp(1.4rem,4vw,3.8rem);margin-bottom:3rem}
+.flogo img{height:clamp(36px,6vw,50px);width:auto;filter:brightness(0) invert(1);opacity:.8;transition:opacity .3s}
+.flogo img:hover{opacity:1}
+.flogo .fb{font-family:var(--serif);font-size:1.6rem;font-weight:300;color:var(--w);letter-spacing:.1em}
+.flogo .fb span{color:var(--gold)}
+.ftag{color:rgba(255,255,255,.36);font-size:.79rem;line-height:1.75;max-width:240px;margin-top:.9rem}
+.fsoc{display:flex;gap:.6rem;margin-top:1.3rem}
+.fsa{width:30px;height:30px;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.45);font-size:.73rem;text-decoration:none;transition:all .3s;cursor:pointer}
+.fsa:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-3px)}
+.fc h4{color:rgba(255,255,255,.8);font-size:.68rem;letter-spacing:.23em;text-transform:uppercase;margin-bottom:1.2rem;font-weight:500}
+.fc ul{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.fc a{color:rgba(255,255,255,.38);font-size:.78rem;text-decoration:none;transition:color .3s,padding-left .3s;display:block;cursor:pointer}
+.fc a:hover{color:rgba(255,255,255,.78);padding-left:5px}
+.fbot{border-top:1px solid rgba(255,255,255,.06);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.7rem}
+.fcopy{color:rgba(255,255,255,.24);font-size:.74rem}
+.flinks{display:flex;gap:1.6rem}
+.flinks a{color:rgba(255,255,255,.24);font-size:.7rem;text-decoration:none;transition:color .3s;cursor:pointer}
+.flinks a:hover{color:var(--gold)}
+@media(max-width:880px){.ft{grid-template-columns:1fr 1fr;gap:1.8rem}}
+@media(max-width:480px){.ft{grid-template-columns:1fr}.fbot{flex-direction:column;text-align:center}}
 
-/* LEAF DECORATIONS */
-.leaf-deco{
-  position:absolute;font-size:8rem;opacity:0.04;pointer-events:none;
-  animation:leaf-sway 8s ease-in-out infinite;
-}
-@keyframes leaf-sway{0%,100%{transform:rotate(-10deg) scale(1)}50%{transform:rotate(10deg) scale(1.05)}}
+/* FLOAT CTAs */
+.fltcta{position:fixed;bottom:clamp(.9rem,3vw,1.8rem);right:clamp(.9rem,3vw,1.8rem);z-index:90;display:flex;flex-direction:column;align-items:flex-end;gap:.55rem}
+.flb{width:48px;height:48px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 8px 24px rgba(27,94,32,.32);transition:all .35s var(--spring);text-decoration:none;cursor:pointer;background:var(--g2);color:var(--w)}
+.flb:hover{transform:scale(1.15)}
+.flb.gold{background:var(--gold);color:var(--g1);box-shadow:0 8px 24px rgba(249,168,37,.38)}
+.flb.btt{opacity:0;transform:scale(0);transition:opacity .4s,transform .4s var(--spring);background:var(--g1)}
+.flb.btt.show{opacity:1;transform:scale(1)}
+.flb.btt:hover{transform:scale(1.15)}
 
-/* ANIMATED COUNTER */
-.counting{display:inline-block}
-
-/* LOADING SCREEN */
-#loader{
-  position:fixed;inset:0;background:var(--green-deep);
-  z-index:10000;display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:1rem;
-  transition:opacity 0.8s ease,visibility 0.8s ease;
-}
-#loader.hidden{opacity:0;visibility:hidden}
-.loader-logo{
-  font-family:var(--font-serif);font-size:3rem;font-weight:300;
-  color:var(--cream);letter-spacing:0.2em;
-  animation:loader-pulse 1.5s ease-in-out infinite;
-}
-.loader-logo span{color:var(--gold)}
-@keyframes loader-pulse{0%,100%{opacity:0.4}50%{opacity:1}}
-.loader-bar{width:200px;height:1px;background:rgba(255,255,255,0.1);margin-top:1rem;overflow:hidden}
-.loader-fill{height:100%;background:var(--gold);animation:load-bar 1.8s ease forwards}
-@keyframes load-bar{from{width:0}to{width:100%}}
-
-@media(max-width:1200px){
-  nav{padding:1.2rem 2rem}
-  .hero-content{padding:0 4rem}
-  .categories,.about,.products,.contact,.testimonials,.nature-banner{padding:5rem 3rem}
-  footer{padding:4rem 3rem 2rem}
-  .hero-float-img{display:none}
-  .about-inner{grid-template-columns:1fr;gap:4rem}
-  .footer-top{grid-template-columns:1fr 1fr;gap:2rem}
-  .contact{grid-template-columns:1fr;gap:3rem}
-}
-@media(max-width:768px){
-  .cat-grid,.products-grid,.testi-grid{grid-template-columns:1fr}
-  nav .nav-links{display:none}
-  .hero-h1{font-size:3rem}
-  .nature-banner{flex-direction:column}
-}
+/* TILT - desktop only */
+.tilt{transform-style:preserve-3d}
 </style>
 </head>
 <body>
+<div id="spb"></div>
+<div id="ld">
+  <img class="ld-img" src="https://orinlife.net/web-assets/images/logo.png" alt="Orinlife" onerror="this.style.display='none';document.querySelector('.ld-fb').style.display='block'"/>
+  <div class="ld-fb">Orin<span>life</span></div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
+  <div class="ld-pct" id="ldp">Loading...</div>
+</div>
+<div id="c1"></div><div id="c2"></div>
+<div id="ptc"></div>
+<div class="fltcta">
+  <a href="tel:+917529055117" class="flb gold" title="Call Us">📞</a>
+  <button class="flb btt" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+</div>
+<div class="ov2" id="ov2"></div>
 
-<!-- LOADER -->
-<div id="loader">
-  <div class="loader-logo">Orin<span>life</span></div>
-  <div class="loader-bar"><div class="loader-fill"></div></div>
+<!-- TOPBAR -->
+<div class="tb">
+  <div class="tbl">
+    <div class="tbi"><svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8"/><rect x="2" y="6" width="20" height="14" rx="2"/></svg>info@orinlife.net</div>
+    <div class="tbi"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.5 12a19.79 19.79 0 01-3.07-8.67A2 2 0 013.41 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.91 8.09a16 16 0 006 6l.76-.76a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>+91 7529055117</div>
+  </div>
+  <div class="tbr"><a href="#">Facebook</a><a href="#">Twitter</a><a href="#">Instagram</a><a href="#">YouTube</a></div>
 </div>
 
-<!-- CURSOR -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-
-<!-- PARTICLES -->
-<div id="particles"></div>
-
 <!-- NAV -->
-<nav id="navbar">
-  <a href="#" class="nav-logo">Orin<span>life</span></a>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#products">Products</a></li>
-    <li><a href="#wellness">Wellness</a></li>
+<nav id="nav">
+  <a href="#" class="nl-logo">
+    <img src="https://orinlife.net/web-assets/images/logo.png" alt="Orinlife" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+    <div class="fb" style="display:none">Orin<span>life</span></div>
+  </a>
+  <ul class="nmenu" id="nm">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#about">About ▾</a>
+      <ul class="drop"><li><a href="#about">About Company</a></li><li><a href="#about">Vision &amp; Mission</a></li><li><a href="#about">Banker</a></li></ul>
+    </li>
+    <li><a href="#products">Products ▾</a>
+      <ul class="drop"><li><a href="#products">Personal Care</a></li><li><a href="https://orinlife.net/healthcare-product.html" target="_blank">Health Care</a></li><li><a href="#products">Beauty Care</a></li><li><a href="#products">Wellness Care</a></li></ul>
+    </li>
+    <li><a href="#opp">Opportunity</a></li>
+    <li><a href="#contact">Legal</a></li>
+    <li><a href="#">Login ▾</a>
+      <ul class="drop"><li><a href="https://orinlife.net/login.html" target="_blank">Sign In</a></li><li><a href="https://orinlife.net/userpages/openentry.aspx" target="_blank">Sign Up</a></li></ul>
+    </li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <a href="#contact" class="nav-cta">Join Us</a>
+  <div class="nav-r">
+    <div class="nav-call">For Support<strong>+91 7529055117</strong></div>
+    <a href="https://orinlife.net/userpages/openentry.aspx" class="nav-cta" target="_blank">Register</a>
+    <button class="hbg" id="hbg" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-orbs">
-    <div class="orb" style="width:600px;height:600px;top:-100px;right:-100px;animation-duration:8s"></div>
-    <div class="orb" style="width:400px;height:400px;bottom:-50px;left:20%;animation-duration:12s;animation-delay:-3s"></div>
-    <div class="orb" style="width:250px;height:250px;top:30%;left:10%;animation-duration:10s;animation-delay:-6s"></div>
-  </div>
-  <div class="hero-grid"></div>
-  <div class="hero-content">
-    <div class="hero-tag">Est. 2020 · Ludhiana, India</div>
-    <h1 class="hero-h1">Nature's <em>Healing,</em><br>Delivered to You</h1>
-    <p class="hero-sub">Experience the pure power of nature with our organic herbal products for health, wellness, and vitality. Ancient wisdom, modern science.</p>
-    <div class="hero-btns">
-      <button class="btn-primary">Explore Products</button>
-      <button class="btn-secondary">Our Story</button>
+<section class="hero sec" id="hero">
+  <div class="hl">
+    <div class="hmesh"></div>
+    <div class="hrings">
+      <div class="hring" style="width:600px;height:600px;top:-100px;right:-100px"></div>
+      <div class="hring" style="width:400px;height:400px;bottom:0;left:-50px;animation-delay:-2.5s"></div>
+      <div class="hring" style="width:260px;height:260px;top:30%;left:8%;animation-delay:-5s"></div>
     </div>
-  </div>
-  <div class="hero-float-img">
-    <div style="background:linear-gradient(135deg,rgba(122,184,127,0.3),rgba(201,168,76,0.15));border-radius:4px;aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);font-size:10rem">🌿</div>
-    <div class="hero-float-badge">
-      <span class="num">100%</span>
-      <span class="label">Natural</span>
+    <div class="htag">Welcome to Orinlife</div>
+    <h1 class="hh1">Nature's <em>Healing,</em><br>Delivered to You</h1>
+    <p class="hp">Experience the pure power of nature with our organic herbal products for health, wellness, and vitality. Ancient wisdom, modern science.</p>
+    <div class="hbtns">
+      <button class="bg" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Explore Products</button>
+      <button class="bow" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Read More</button>
     </div>
+    <div class="hsc"><span>Scroll</span><div class="scl"></div></div>
   </div>
-  <div class="hero-scroll">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
+  <div class="hr">
+    <img src="Gemini_Generated_Image_httpiehttpiehttp.png" alt="Orinlife Natural Wellness" onerror="this.src='';this.parentElement.style.background='linear-gradient(135deg,#c8e6c9,#a5d6a7)'"/>
+    <div class="hrov"></div>
+    <div class="hbadge"><div class="hbnum"></div><div class="hbtxt">Nature<br>Goodness</div></div>
   </div>
 </section>
 
 <!-- MARQUEE -->
-<div class="marquee-section">
-  <div class="marquee-track" id="marquee">
-    <div class="marquee-item">Personal Care</div>
-    <div class="marquee-item">Health Care</div>
-    <div class="marquee-item">Beauty Care</div>
-    <div class="marquee-item">Wellness Care</div>
-    <div class="marquee-item">Organic Herbs</div>
-    <div class="marquee-item">Natural Immunity</div>
-    <div class="marquee-item">Holistic Wellness</div>
-    <div class="marquee-item">Personal Care</div>
-    <div class="marquee-item">Health Care</div>
-    <div class="marquee-item">Beauty Care</div>
-    <div class="marquee-item">Wellness Care</div>
-    <div class="marquee-item">Organic Herbs</div>
-    <div class="marquee-item">Natural Immunity</div>
-    <div class="marquee-item">Holistic Wellness</div>
+<div class="mq sec">
+  <div class="mqt">
+    <div class="mqi">Personal Care</div><div class="mqi">Health Care</div><div class="mqi">Beauty Care</div><div class="mqi">Wellness Care</div>
+    <div class="mqi">Organic Herbs</div><div class="mqi">Boost Immunity</div><div class="mqi">Natural Vitality</div><div class="mqi">Herbal Formulas</div>
+    <div class="mqi">Personal Care</div><div class="mqi">Health Care</div><div class="mqi">Beauty Care</div><div class="mqi">Wellness Care</div>
+    <div class="mqi">Organic Herbs</div><div class="mqi">Boost Immunity</div><div class="mqi">Natural Vitality</div><div class="mqi">Herbal Formulas</div>
   </div>
 </div>
 
+<!-- STATS BAR -->
+<div class="stbar sec">
+  <div class="stbi rv"><div class="stbn"><span class="cnt" data-t="500">0</span><sup>+</sup></div><div class="stbl">Products</div></div>
+  <div class="stbi rv" style="transition-delay:.1s"><div class="stbn"><span class="cnt" data-t="10000">0</span><sup>+</sup></div><div class="stbl">Happy Clients</div></div>
+  <div class="stbi rv" style="transition-delay:.2s"><div class="stbn"><span class="cnt" data-t="5">0</span><sup>+</sup></div><div class="stbl">Years Trusted</div></div>
+  <div class="stbi rv" style="transition-delay:.3s"><div class="stbn"><span class="cnt" data-t="100">0</span><sup>%</sup></div><div class="stbl">Natural</div></div>
+</div>
+
 <!-- CATEGORIES -->
-<section class="categories" id="products">
-  <div class="reveal">
-    <div class="section-label">Our Offerings</div>
-    <h2 class="section-h2">Essential Care,<br><em>Stylishly Packed</em></h2>
-  </div>
-  <div class="cat-grid">
-    <div class="cat-card reveal" style="transition-delay:0.1s;background:#1a2e22">
-      <div class="cat-img-placeholder" style="background:linear-gradient(135deg,#1a2e22,#0d1f15)">🌱</div>
-      <div class="cat-content">
-        <div class="cat-num">01</div>
-        <div class="cat-name">Personal Care</div>
-        <div class="cat-desc">Keep all your daily personal care items neatly stored, safe, and ready to use with our natural formulas.</div>
-        <div class="cat-arrow">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-      </div>
+<section class="cats sec" id="categories">
+  <div class="wrap">
+    <div class="rv">
+      <div class="eye">Our Offerings</div>
+      <h2 class="sh">Essential Care,<br><em>Stylishly Packed</em></h2>
+      <p style="color:var(--mid);max-width:490px;line-height:1.7;font-size:.9rem;margin-top:.55rem">A compact solution for storing personal care, healthcare, and beauty products effortlessly</p>
     </div>
-    <div class="cat-card reveal" style="transition-delay:0.2s;background:#0a2a14">
-      <div class="cat-img-placeholder" style="background:linear-gradient(135deg,#0a2a14,#061a0c)">🌿</div>
-      <div class="cat-content">
-        <div class="cat-num">02</div>
-        <div class="cat-name">Health Care</div>
-        <div class="cat-desc">Store all your medicines, supplements, and wellness items safely within easy reach. Ancient herbal wisdom.</div>
-        <div class="cat-arrow">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    <div class="cgrid" style="margin-top:2.8rem">
+      <div class="cc rv tilt" style="transition-delay:.1s">
+        <img src="https://orinlife.net/web-assets/images/resource/news-4.jpg" alt="Personal Care" onerror="this.src='';this.parentElement.style.background='#1b5e20'"/>
+        <div class="ccmask"></div><div class="cctag">New</div>
+        <div class="ccb"><div class="ccn">01</div><div class="cct">Personal Care</div><div class="ccp">Keep all your daily personal care items neatly stored, safe, and ready to use with our premium natural formulas.</div><div class="cca">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
       </div>
-    </div>
-    <div class="cat-card accent reveal" style="transition-delay:0.3s">
-      <div class="cat-img-placeholder" style="background:linear-gradient(135deg,#e8d5a3,#c9a84c)">🌸</div>
-      <div class="cat-content">
-        <div class="cat-num">03</div>
-        <div class="cat-name">Beauty Care</div>
-        <div class="cat-desc">Keep all your beauty products organized, protected, and ready for your daily routine with nature's touch.</div>
-        <div class="cat-arrow">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <div class="cc rv tilt" style="transition-delay:.2s">
+        <img src="https://orinlife.net/web-assets/images/resource/news-5.jpg" alt="Beauty Care" onerror="this.src='';this.parentElement.style.background='#0d1f10'"/>
+        <div class="ccmask"></div><div class="cctag">Popular</div>
+        <div class="ccb"><div class="ccn">02</div><div class="cct">Beauty Care</div><div class="ccp">Keep all your beauty products organized, protected, and ready for your daily routine with nature's finest touch.</div><div class="cca">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
+      </div>
+      <div class="cc rv tilt" style="transition-delay:.3s">
+        <img src="https://orinlife.net/web-assets/images/resource/news-6.jpg" alt="Health Care" onerror="this.src='';this.parentElement.style.background='#2e7d32'"/>
+        <div class="ccmask"></div><div class="cctag">Best Seller</div>
+        <div class="ccb"><div class="ccn">03</div><div class="cct">Health Care</div><div class="ccp">Store all your medicines, supplements, and wellness items safely within easy reach every single day.</div><div class="cca">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ABOUT -->
-<section class="about" id="about">
-  <div class="about-bg-text">Orinlife</div>
-  <span class="leaf-deco" style="top:10%;right:5%;font-size:12rem">🍃</span>
-  <span class="leaf-deco" style="bottom:15%;left:3%;animation-delay:-3s">🌿</span>
-  <div class="about-inner">
-    <div class="reveal-left">
-      <div class="about-visual">
-        <div class="about-img-wrap">
-          <div class="about-img-emoji">🌿</div>
-        </div>
-        <div class="about-badge">
-          <div class="about-badge-text">Pure &amp; Natural · Organic · Certified · Trusted</div>
-        </div>
-        <div class="about-stats">
-          <div class="stat reveal" style="transition-delay:0.2s">
-            <div class="stat-num counting" data-target="500">0</div><span style="color:var(--gold);font-size:2.8rem;font-family:var(--font-serif);line-height:1">+</span>
-            <div class="stat-label">Products</div>
+<section class="about sec" id="about">
+  <div class="abgw">Orinlife</div>
+  <div class="wrap">
+    <div class="abin">
+      <div class="rl">
+        <div class="abvis">
+          <div class="abframe">
+            <img src="https://orinlife.net/web-assets/images/resource/image-1.jpg" alt="About Orinlife" onerror="this.src='';this.parentElement.style.background='#1b5e20';this.parentElement.innerHTML+='<div style=\'display:flex;align-items:center;justify-content:center;position:absolute;inset:0;font-size:6rem\'>🌿</div>'"/>
+            <div class="abfov"></div>
           </div>
-          <div class="stat reveal" style="transition-delay:0.3s">
-            <div class="stat-num counting" data-target="10000">0</div><span style="color:var(--gold);font-size:2.8rem;font-family:var(--font-serif);line-height:1">+</span>
-            <div class="stat-label">Happy Clients</div>
-          </div>
-          <div class="stat reveal" style="transition-delay:0.4s">
-            <div class="stat-num counting" data-target="5">0</div><span style="color:var(--gold);font-size:2.8rem;font-family:var(--font-serif);line-height:1">+</span>
-            <div class="stat-label">Years Trusted</div>
-          </div>
-          <div class="stat reveal" style="transition-delay:0.5s">
-            <div class="stat-num counting" data-target="100">0</div><span style="color:var(--gold);font-size:2.8rem;font-family:var(--font-serif);line-height:1">%</span>
-            <div class="stat-label">Natural</div>
+          <div class="abspin"><p>Health · Harmony · Organic · Certified · Trusted ·</p></div>
+          <div class="abst">
+            <div class="ast rv" style="transition-delay:.15s"><div class="astn"><span class="cnt" data-t="500">0</span><sup>+</sup></div><div class="astl">Products</div></div>
+            <div class="ast rv" style="transition-delay:.25s"><div class="astn"><span class="cnt" data-t="10000">0</span><sup>+</sup></div><div class="astl">Clients</div></div>
+            <div class="ast rv" style="transition-delay:.35s"><div class="astn"><span class="cnt" data-t="5">0</span><sup>+</sup></div><div class="astl">Years</div></div>
+            <div class="ast rv" style="transition-delay:.45s"><div class="astn"><span class="cnt" data-t="100">0</span><sup>%</sup></div><div class="astl">Natural</div></div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="about-text reveal-right">
-      <div class="section-label">About Orinlife</div>
-      <h2 class="section-h2">True Wellness<br>Comes from <em>Nature</em></h2>
-      <p>At Orinlife, we believe true wellness comes from nature. Our range of herbal and organic products is designed to support your body, mind, and spirit naturally.</p>
-      <p>Each formula is crafted using pure, sustainably sourced herbs to boost immunity, enhance vitality, and promote overall well-being. We combine ancient herbal wisdom with modern practices.</p>
-      <div class="about-features">
-        <div class="feature-item">
-          <div class="feature-icon">🌱</div>
-          <div class="feature-text">
-            <h4>100% Organic Ingredients</h4>
-            <p>Every ingredient is sustainably sourced and certified organic</p>
-          </div>
+      <div class="abtxt rr">
+        <div class="eye">About Orinlife</div>
+        <h2 class="sh" style="margin-bottom:1.1rem">True Wellness<br>Comes from <em>Nature</em></h2>
+        <p class="abp">At <strong>Orinlife</strong>, we believe true wellness comes from nature. Our range of herbal and organic products is designed to support your body, mind, and spirit naturally.</p>
+        <p class="abp">Each formula is crafted using pure, sustainably sourced herbs to boost immunity, enhance vitality, and promote overall well-being. We combine ancient herbal wisdom with modern practices to ensure every product delivers safe, effective, and holistic health benefits.</p>
+        <p class="abp">Embrace a lifestyle of balance, energy, and natural wellness with our carefully curated herbal remedies.</p>
+        <div class="abfeats">
+          <div class="aft"><div class="aftic">🌱</div><div><h4>100% Organic Ingredients</h4><p>Every ingredient is sustainably sourced and certified organic</p></div></div>
+          <div class="aft"><div class="aftic">🔬</div><div><h4>Science-Backed Formulas</h4><p>Ancient wisdom combined with modern clinical research</p></div></div>
+          <div class="aft"><div class="aftic">🛡️</div><div><h4>Safe &amp; Certified</h4><p>All products undergo rigorous quality certification</p></div></div>
         </div>
-        <div class="feature-item">
-          <div class="feature-icon">🔬</div>
-          <div class="feature-text">
-            <h4>Science-Backed Formulas</h4>
-            <p>Ancient herbal wisdom combined with modern clinical research</p>
-          </div>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">🛡️</div>
-          <div class="feature-text">
-            <h4>Safe & Certified</h4>
-            <p>All products undergo rigorous quality testing and certification</p>
-          </div>
-        </div>
+        <a href="#" class="bgo"><span>View Detail</span></a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- PRODUCTS -->
-<section class="products" style="padding:8rem 6rem;background:var(--cream-warm)">
-  <div class="products-header">
-    <div class="reveal">
-      <div class="section-label">Our Range</div>
-      <h2 class="section-h2">Orinlife <em>Products</em></h2>
+<section class="prods sec" id="products">
+  <div class="wrap">
+    <div class="phd rv">
+      <div><div class="eye">Orinlife Products</div><h2 class="sh"> Health &<em> Harmony</em></h2></div>
+      <a href="https://orinlife.net/healthcare-product.html" class="bg" target="_blank" style="text-decoration:none">View All →</a>
     </div>
-    <button class="btn-secondary" style="border-color:var(--green-mid);color:var(--green-mid);cursor:none">View All</button>
-  </div>
-  <div class="products-grid">
-    <div class="product-card reveal" style="transition-delay:0.1s">
-      <div class="product-img" style="background:linear-gradient(135deg,#e1f5ee,#c8e6c9)">
-        🌿
-        <div class="product-glow"></div>
-      </div>
-      <div class="product-info">
-        <div class="product-cat">Health Care</div>
-        <div class="product-name">Immunity Booster Complex</div>
-        <div class="product-desc">A powerful blend of ashwagandha, tulsi, and giloy to strengthen your immune system naturally.</div>
-        <div class="product-footer">
-          <div class="product-tag">Natural</div>
-          <div class="product-arrow">→</div>
+    <div class="pgrid">
+      <div class="pc feat rv" style="transition-delay:.1s">
+        <div class="pimg">
+          <img src="https://orinlife.net/web-assets/images/products/p1.jpg" alt="Superfood" onerror="this.src='';this.parentElement.innerHTML='<div style=\'font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%;width:100%\'>🌿</div>'"/>
+          <div class="pgl"></div><div class="pbdg">★ Flagship</div>
+        </div>
+        <div class="pbd">
+          <div class="pcat">Health Care · Signature Product</div>
+          <div class="pnm">Orinlife Superfood</div>
+          <div class="pds">A powerful blend of nature's finest superfoods packed with antioxidants, vitamins, and minerals for complete daily wellness and vitality.</div>
+          <div class="blist">
+            <div class="pft" style="margin-top:1.4rem"><div class="ppr">MRP <span>₹1,999</span></div><a href="https://orinlife.net/superfood.html" class="pbtn" target="_blank">View More</a></div>
+            <div class="bi">Boosts Immunity – Antioxidants &amp; vitamins</div>
+            <div class="bi">Enhances Energy – Fights fatigue all day</div>
+            <div class="bi">Digestive Health – Fiber-rich greens &amp; herbs</div>
+            <div class="bi">Heart &amp; Brain Health – Cognitive support</div>
+            <div class="bi">Reduces Stress – Ashwagandha &amp; Ginseng</div>
+            <div class="bi">Detoxification – Moringa, Spirulina</div>
+            <div class="bi">Super Antioxidants – Fights free radicals</div>
+            <div class="bi">Joint &amp; Bone Health – Essential nutrients</div>
+            <div class="bi">Balances Hormones – Enhances vitality</div>
+          </div>
+          
         </div>
       </div>
-    </div>
-    <div class="product-card reveal" style="transition-delay:0.2s">
-      <div class="product-img" style="background:linear-gradient(135deg,#faeeda,#f5ede0)">
-        🌸
-        <div class="product-glow"></div>
+      <div class="pc rv tilt" style="transition-delay:.2s">
+        <div class="pimg"><img src="https://orinlife.net/web-assets/images/resource/news-4.jpg" alt="Personal Care" onerror="this.src='';this.parentElement.innerHTML='<div style=\'font-size:4rem;display:flex;align-items:center;justify-content:center;height:100%;width:100%\'>🧴</div>'"/><div class="pgl"></div><div class="pbdg">Natural</div></div>
+        <div class="pbd"><div class="pcat">Personal Care</div><div class="pnm">Daily Personal Care</div><div class="pds">Keep all your daily personal care items neatly stored, safe, and ready to use with our trusted natural formulas.</div><div class="pft"><div style="font-size:.85rem;color:var(--g2)">Explore Range →</div><button class="pbtn">View More</button></div></div>
       </div>
-      <div class="product-info">
-        <div class="product-cat">Beauty Care</div>
-        <div class="product-name">Herbal Glow Serum</div>
-        <div class="product-desc">Revitalize your skin with our saffron and sandalwood enriched beauty serum for a radiant glow.</div>
-        <div class="product-footer">
-          <div class="product-tag">Organic</div>
-          <div class="product-arrow">→</div>
-        </div>
-      </div>
-    </div>
-    <div class="product-card reveal" style="transition-delay:0.3s">
-      <div class="product-img" style="background:linear-gradient(135deg,#e6f1fb,#b5d4f4)">
-        💧
-        <div class="product-glow"></div>
-      </div>
-      <div class="product-info">
-        <div class="product-cat">Wellness Care</div>
-        <div class="product-name">Vitality Wellness Drops</div>
-        <div class="product-desc">Daily wellness drops formulated with rare herbs to promote energy, focus, and mental clarity.</div>
-        <div class="product-footer">
-          <div class="product-tag">Premium</div>
-          <div class="product-arrow">→</div>
-        </div>
+      <div class="pc rv tilt" style="transition-delay:.3s">
+        <div class="pimg"><img src="https://orinlife.net/web-assets/images/resource/news-5.jpg" alt="Beauty Care" onerror="this.src='';this.parentElement.innerHTML='<div style=\'font-size:4rem;display:flex;align-items:center;justify-content:center;height:100%;width:100%\'>🌸</div>'"/><div class="pgl"></div><div class="pbdg">Organic</div></div>
+        <div class="pbd"><div class="pcat">Beauty Care</div><div class="pnm">Natural Beauty Care</div><div class="pds">Keep all your beauty products organized, protected, and ready for your daily routine with the gentle power of nature.</div><div class="pft"><div style="font-size:.85rem;color:var(--g2)">Explore Range →</div><button class="pbtn">View More</button></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- NATURE BANNER -->
-<div class="nature-banner" id="wellness">
-  <div class="banner-left reveal-left">
-    <div class="section-label" style="color:rgba(250,246,238,0.7)">Our Promise</div>
-    <h2 class="section-h2" style="color:var(--cream);margin-bottom:1.5rem">Embrace Natural<br><em>Wellness</em></h2>
-    <p>Discover the natural way to wellness with our pure, organic herbal products. Boost immunity, enhance vitality, and nurture body, mind, and soul for a balanced, healthy lifestyle every day.</p>
-    <button class="btn-primary" style="margin-top:2.5rem;cursor:none">Get In Touch</button>
+<!-- BANNER -->
+<!--<div class="banner sec">
+  <img src="https://orinlife.net/web-assets/images/banner.jpg" alt="Wellness" class="banbg" onerror="this.style.display='none'"/>
+  <div class="banorb" style="width:380px;height:380px;top:-70px;left:-70px;animation-duration:9s"></div>
+  <div class="banorb" style="width:270px;height:270px;bottom:-50px;right:20%;animation-duration:12s;animation-delay:-4s"></div>
+  <div class="banb">
+    <div class="eye rv" style="justify-content:center">Our Promise</div>
+    <h2 class="banh2 rv" style="transition-delay:.1s">Embrace <em>Natural</em><br>Wellness</h2>
+    <p class="banp rv" style="transition-delay:.2s">Discover the natural way to wellness with our pure, organic herbal products. Boost immunity, enhance vitality, and nurture body, mind, and soul for a balanced, healthy lifestyle every day.</p>
+    <button class="bg rv" style="transition-delay:.3s" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get In Touch</button>
   </div>
-  <div class="banner-right reveal-right">
-    <div class="nature-circle">
-      <div class="nature-circle-inner">
-        <span>🌿</span>
-        <p>Pure &amp; Natural Healing</p>
-      </div>
+  <div class="prw"><div class="pr"><div class="pri"><span>🌿</span><p>Pure Natural Healing</p></div></div></div>
+</div>-->
+
+<!-- PROCESS -->
+<section class="proc sec">
+  <div class="wrap">
+    <div class="rv" style="text-align:center"><div class="eye" style="justify-content:center">Our Process</div><h2 class="sh" style="text-align:center">How Orinlife <em>Works</em></h2></div>
+    <div class="procg">
+      <div class="procc rv tilt" style="transition-delay:.1s"><span class="procic">🌿</span><h3>Herb Sourcing</h3><p>We sustainably source the finest organic herbs from trusted farms across India, ensuring purity at every step.</p></div>
+      <div class="procc rv tilt" style="transition-delay:.2s"><span class="procic">🔬</span><h3>Scientific Formulation</h3><p>Our experts combine ancient Ayurvedic wisdom with modern clinical research to craft each formula.</p></div>
+      <div class="procc rv tilt" style="transition-delay:.3s"><span class="procic">✅</span><h3>Quality Certification</h3><p>Every batch undergoes rigorous third-party testing and quality certification before packaging.</p></div>
+      <div class="procc rv tilt" style="transition-delay:.4s"><span class="procic">🚀</span><h3>Delivered to You</h3><p>Fast, secure delivery directly to your doorstep across India with full satisfaction guarantee.</p></div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- TESTIMONIALS -->
-<section class="testimonials">
-  <div class="reveal">
-    <div class="section-label">Client Stories</div>
-    <h2 class="section-h2">Stories of <em>Wellness</em><br>& Vitality</h2>
+<section class="testi sec">
+  <div class="wrap">
+    <div class="rv" style="text-align:center"><div class="eye" style="justify-content:center">Client Testimonials</div><h2 class="sh" style="text-align:center">Stories of <em>Wellness</em><br>&amp; Vitality</h2></div>
+    <div class="tgrid">
+      <div class="tc rv tilt" style="transition-delay:.1s"><div class="tcqbg">"</div><div class="stars">★★★★★</div><p class="tq">I've been using these herbal products for months, and my energy levels have improved drastically. Truly natural and effective!</p><div class="ta"><div class="tav"><img src="https://orinlife.net/web-assets/images/resource/author-2.jpg" alt="Client" onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:1.2rem\'>👩</div>'"/></div><div><div class="tn">Priya Sharma</div><div class="tr">Wellness Enthusiast, Delhi</div></div></div></div>
+      <div class="tc rv tilt" style="transition-delay:.2s"><div class="tcqbg">"</div><div class="stars">★★★★★</div><p class="tq">I've been using these herbal products for months, and my energy levels have improved drastically. Truly natural and effective!</p><div class="ta"><div class="tav"><img src="https://orinlife.net/web-assets/images/resource/author-2.jpg" alt="Client" onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:1.2rem\'>👨</div>'"/></div><div><div class="tn">Rajesh Kumar</div><div class="tr">Fitness Coach, Mumbai</div></div></div></div>
+      <div class="tc rv tilt" style="transition-delay:.3s"><div class="tcqbg">"</div><div class="stars">★★★★★</div><p class="tq">I've been using these herbal products for months, and my energy levels have improved drastically. Truly natural and effective!</p><div class="ta"><div class="tav"><img src="https://orinlife.net/web-assets/images/resource/author-2.jpg" alt="Client" onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:1.2rem\'>👩‍💼</div>'"/></div><div><div class="tn">Ananya Mehta</div><div class="tr">Blogger, Chandigarh</div></div></div></div>
+    </div>
   </div>
-  <div class="testi-grid">
-    <div class="testi-card reveal" style="transition-delay:0.1s">
-      <div class="stars">★★★★★</div>
-      <p class="testi-quote">These herbal products have transformed my energy levels. After months of use, I feel like a completely different person. Truly natural and effective!</p>
-      <div class="testi-author">
-        <div class="testi-avatar">👩</div>
-        <div>
-          <div class="testi-name">Priya Sharma</div>
-          <div class="testi-role">Wellness Enthusiast, Delhi</div>
-        </div>
+</section>
+
+<!-- OPPORTUNITY -->
+<section class="opp sec" id="opp">
+  <div class="wrap">
+    <div class="oppin">
+      <div class="rl">
+        <div class="eye">Business Opportunity</div>
+        <h2 class="sh">Join Our <em>Wellness Journey</em><br></h2>
+        <p style="color:var(--mid);line-height:1.85;margin:1rem 0 1.8rem;font-size:.89rem">Become part of the Orinlife family and build a rewarding business while helping others achieve natural wellness. Our network offers unparalleled support and growth opportunities nationwide.</p>
+        <a href="https://orinlife.net/userpages/openentry.aspx" class="bg" target="_blank" style="text-decoration:none;display:inline-block">Register Now →</a>
       </div>
-    </div>
-    <div class="testi-card reveal" style="transition-delay:0.2s">
-      <div class="stars">★★★★★</div>
-      <p class="testi-quote">I've tried many herbal brands, but Orinlife stands apart. The quality is exceptional, and I can feel the difference in my immunity this winter season.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">👨</div>
-        <div>
-          <div class="testi-name">Rajesh Kumar</div>
-          <div class="testi-role">Fitness Coach, Mumbai</div>
-        </div>
-      </div>
-    </div>
-    <div class="testi-card reveal" style="transition-delay:0.3s">
-      <div class="stars">★★★★★</div>
-      <p class="testi-quote">The beauty care range is phenomenal. My skin has never looked better. Pure, organic, and genuinely effective — Orinlife has earned my complete trust.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">👩‍💼</div>
-        <div>
-          <div class="testi-name">Ananya Mehta</div>
-          <div class="testi-role">Lifestyle Blogger, Chandigarh</div>
-        </div>
+      <div class="ocards rr">
+        <div class="oc rv tilt" style="transition-delay:.1s"><span class="ocic">💰</span><h4>Earn Income</h4><p>Build a sustainable income through our rewarding network marketing model</p></div>
+        <div class="oc rv tilt" style="transition-delay:.2s"><span class="ocic">🌍</span><h4>Nationwide Reach</h4><p>Sell and distribute across India with our robust logistics network</p></div>
+        <div class="oc rv tilt" style="transition-delay:.3s"><span class="ocic">📚</span><h4>Training &amp; Support</h4><p>Comprehensive training, tools, and dedicated support at every step</p></div>
+        <div class="oc rv tilt" style="transition-delay:.4s"><span class="ocic">🤝</span><h4>Community</h4><p>Join a thriving community of wellness advocates nationwide</p></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- CONTACT -->
-<section class="contact" id="contact">
-  <div class="reveal-left">
-    <div class="section-label" style="color:var(--gold)">Reach Out</div>
-    <h2 class="section-h2" style="color:var(--cream)">Let's Start Your<br><em>Wellness Journey</em></h2>
-    <p style="color:rgba(250,246,238,0.6);line-height:1.9">Have questions about our products or want to join our wellness community? We'd love to hear from you.</p>
-    <div class="contact-detail">
-      <div class="contact-icon">📍</div>
-      <div class="contact-detail-text">
-        <span>Address</span>
-        <a href="#">Vpo Alamgir, Ludhiana-141116, Punjab</a>
+<section class="contact sec" id="contact">
+  <div class="wrap">
+    <div class="cin">
+      <div class="ci rl">
+        <div class="eye">Get In Touch</div>
+        <h2 class="sh" style="margin-bottom:1rem">Let's Start Your<br><em>Wellness Journey</em></h2>
+        <p>Have questions about our products or business opportunity? We'd love to hear from you.</p>
+        <div class="cd"><div class="cdic">📍</div><div><div class="cdl">Address</div><span class="cdv">Vpo Alamgir, Ludhiana-141116, Punjab, India</span></div></div>
+        <div class="cd"><div class="cdic">📞</div><div><div class="cdl">Contact Number</div><a href="tel:+917529055117" class="cdv">+91 7529055117</a></div></div>
+        <div class="cd"><div class="cdic">✉️</div><div><div class="cdl">Email</div><a href="orinlife@yahoo.com" class="cdv">orinlife@yahoo.com</a></div></div>
       </div>
-    </div>
-    <div class="contact-detail">
-      <div class="contact-icon">📞</div>
-      <div class="contact-detail-text">
-        <span>Phone</span>
-        <a href="tel:+917529055117">+91 7529055117</a>
+      <div class="rr">
+        <div class="cf">
+          <div class="frow"><div class="fg"><input type="text" placeholder="Full Name"/><div class="fgl"></div></div><div class="fg"><input type="email" placeholder="Email Address"/><div class="fgl"></div></div></div>
+          <div class="fg"><input type="tel" placeholder="Phone Number"/><div class="fgl"></div></div>
+          <div class="fg"><select style="color:rgba(255,255,255,.4)"><option value="" disabled selected>Select Interest</option><option>Personal Care</option><option>Health Care</option><option>Beauty Care</option><option>Wellness Care</option><option>Business Opportunity</option></select></div>
+          <div class="fg"><textarea placeholder="Tell us about your wellness goals..."></textarea><div class="fgl"></div></div>
+          <button class="bsub">Send Message →</button>
+        </div>
       </div>
-    </div>
-    <div class="contact-detail">
-      <div class="contact-icon">✉️</div>
-      <div class="contact-detail-text">
-        <span>Email</span>
-        <a href="mailto:info@orinlife.net">info@orinlife.net</a>
-      </div>
-    </div>
-  </div>
-  <div class="reveal-right">
-    <div class="contact-form">
-      <div class="form-group">
-        <input type="text" placeholder="Your Full Name"/>
-        <div class="form-line"></div>
-      </div>
-      <div class="form-group">
-        <input type="email" placeholder="Email Address"/>
-        <div class="form-line"></div>
-      </div>
-      <div class="form-group">
-        <input type="tel" placeholder="Phone Number"/>
-        <div class="form-line"></div>
-      </div>
-      <div class="form-group">
-        <textarea placeholder="Tell us about your wellness goals..."></textarea>
-        <div class="form-line"></div>
-      </div>
-      <button class="btn-submit">Send Message</button>
     </div>
   </div>
 </section>
 
+<!-- NEWSLETTER -->
+<div class="nl sec">
+  <div class="rv"><h3>Get in your inbox the latest<br><em>News and Offers from Orinlife</em></h3><p>Stay updated with our latest products, wellness tips, and exclusive offers</p><div class="nlf"><input type="email" placeholder="Enter your email address"/><button>Subscribe</button></div></div>
+</div>
+
 <!-- FOOTER -->
 <footer>
-  <div class="footer-top">
-    <div class="footer-brand">
-      <span class="footer-logo">Orin<span>life</span></span>
-      <p class="footer-tagline">Embrace a lifestyle of balance, energy, and natural wellness with our carefully curated herbal remedies.</p>
-      <div class="footer-social">
-        <a href="#" class="soc">f</a>
-        <a href="#" class="soc">𝕏</a>
-        <a href="#" class="soc">in</a>
-        <a href="#" class="soc">▶</a>
-      </div>
+  <div class="ft">
+    <div>
+      <div class="flogo"><img src="https://orinlife.net/web-assets/images/footer-logo.png" alt="Orinlife" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=\'fb\'>Orin<span style=\'color:var(--gold)\'>life</span></div>')"/></div>
+      <p class="ftag">Embrace a lifestyle of balance, energy, and natural wellness. Vpo Alamgir, Ludhiana-141116<br>📞 +91 7529055117 · ✉️ info@orinlife.net</p>
+      <div class="fsoc"><a href="#" class="fsa">f</a><a href="#" class="fsa">𝕏</a><a href="#" class="fsa">in</a><a href="#" class="fsa">▶</a></div>
     </div>
-    <div class="footer-col">
-      <h4>Quick Links</h4>
-      <ul>
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">Our Products</a></li>
-        <li><a href="#">Opportunity</a></li>
-        <li><a href="#">Legal</a></li>
-        <li><a href="#">Contact Us</a></li>
-        <li><a href="#">Grievance</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Products</h4>
-      <ul>
-        <li><a href="#">Personal Care</a></li>
-        <li><a href="#">Health Care</a></li>
-        <li><a href="#">Beauty Care</a></li>
-        <li><a href="#">Wellness Care</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Policies</h4>
-      <ul>
-        <li><a href="#">Privacy Policy</a></li>
-        <li><a href="#">Terms & Conditions</a></li>
-        <li><a href="#">Shipping Policy</a></li>
-        <li><a href="#">Refund Policy</a></li>
-        <li><a href="#">Disclaimer</a></li>
-      </ul>
-    </div>
+    <div class="fc"><h4>Quick Links</h4><ul><li><a href="#about">About Us</a></li><li><a href="#opp">Opportunity</a></li><li><a href="#contact">Legal</a></li><li><a href="#about">Banker</a></li><li><a href="https://orinlife.net/contact.html" target="_blank">Contact Us</a></li><li><a href="https://orinlife.net/Grievance.html" target="_blank">Grievance</a></li></ul></div>
+    <div class="fc"><h4>Products</h4><ul><li><a href="#products">Personal Care</a></li><li><a href="https://orinlife.net/healthcare-product.html" target="_blank">Health Care</a></li><li><a href="#products">Beauty Care</a></li><li><a href="#products">Wellness Care</a></li></ul></div>
+    <div class="fc"><h4>Policies</h4><ul><li><a href="#">Disclaimer</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms &amp; Conditions</a></li><li><a href="#">Shipping Policy</a></li><li><a href="#">Refund Policy</a></li></ul></div>
   </div>
-  <div class="footer-bottom">
-    <div class="footer-copy">© Copyright 2026 Orinlife. All Rights Reserved</div>
-    <div class="footer-legal">
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">Sitemap</a>
-    </div>
-  </div>
+  <div class="fbot"><div class="fcopy">© Copyright 2026 Orinlife. All Rights Reserved</div><div class="flinks"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Sitemap</a></div></div>
 </footer>
 
 <script>
-// LOADER
-window.addEventListener('load',()=>{
-  setTimeout(()=>{document.getElementById('loader').classList.add('hidden')},1800)
-})
+/* LOADER */
+let p=0;const pe=document.getElementById('ldp');
+const pt=setInterval(()=>{p+=Math.random()*14;if(p>100){p=100;clearInterval(pt)}pe.textContent=Math.floor(p)+'%'},100);
+window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('ld').classList.add('out'),1900)});
 
-// CURSOR
-const cursor=document.getElementById('cursor')
-const ring=document.getElementById('cursorRing')
-let mx=0,my=0,rx=0,ry=0
-document.addEventListener('mousemove',e=>{
-  mx=e.clientX;my=e.clientY
-  cursor.style.left=mx+'px';cursor.style.top=my+'px'
-})
-function animRing(){
-  rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12
-  ring.style.left=rx+'px';ring.style.top=ry+'px'
-  requestAnimationFrame(animRing)
-}
-animRing()
-document.querySelectorAll('a,button,.cat-card,.product-card,.testi-card,.stat').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{
-    ring.style.transform='translate(-50%,-50%) scale(1.8)';
-    ring.style.borderColor='var(--gold)';
-    cursor.style.background='var(--gold)'
-  })
-  el.addEventListener('mouseleave',()=>{
-    ring.style.transform='translate(-50%,-50%) scale(1)';
-    ring.style.borderColor='var(--green-sage)';
-    cursor.style.background='var(--green-sage)'
-  })
-})
-
-// PARTICLES
-const pContainer=document.getElementById('particles')
-for(let i=0;i<25;i++){
-  const p=document.createElement('div')
-  p.className='particle'
-  const size=Math.random()*6+3
-  p.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*15+10}s;animation-delay:-${Math.random()*15}s`
-  pContainer.appendChild(p)
+/* CURSOR */
+const c1=document.getElementById('c1'),c2=document.getElementById('c2');
+const isMouse=window.matchMedia('(pointer:fine)').matches;
+if(isMouse){
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;c1.style.left=mx+'px';c1.style.top=my+'px'});
+  (function t(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;c2.style.left=rx+'px';c2.style.top=ry+'px';requestAnimationFrame(t)})();
+  document.querySelectorAll('a,button,.cc,.pc,.tc,.oc,.ast,.procc,.stbi').forEach(el=>{
+    el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+    el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+  });
 }
 
-// NAV SCROLL
-const navbar=document.getElementById('navbar')
+/* PARTICLES */
+const ptcEl=document.getElementById('ptc');
+const pclrs=['var(--gl)','var(--gold)','rgba(255,255,255,.35)'];
+for(let i=0;i<28;i++){const pt=document.createElement('div');pt.className='pt';const s=Math.random()*5+2;pt.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${pclrs[Math.floor(Math.random()*3)]};animation-duration:${Math.random()*18+12}s;animation-delay:-${Math.random()*18}s`;ptcEl.appendChild(pt)}
+
+/* SCROLL PROGRESS & EFFECTS */
+const spb=document.getElementById('spb'),btt=document.getElementById('btt'),nav=document.getElementById('nav');
 window.addEventListener('scroll',()=>{
-  navbar.classList.toggle('scrolled',window.scrollY>60)
-})
+  const s=window.scrollY,h=document.body.scrollHeight-window.innerHeight;
+  spb.style.width=(s/h*100)+'%';
+  nav.classList.toggle('sc',s>15);
+  btt.classList.toggle('show',s>450);
+},{passive:true});
 
-// REVEAL ON SCROLL
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})
-},{threshold:0.1,rootMargin:'0px 0px -50px 0px'})
-document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>obs.observe(el))
-
-// COUNTER ANIMATION
-function animCount(el,target){
-  const dur=2000;const step=16;const inc=target/(dur/step)
-  let cur=0
-  const timer=setInterval(()=>{
-    cur+=inc;if(cur>=target){cur=target;clearInterval(timer)}
-    el.textContent=Math.floor(cur).toLocaleString()
-  },step)
-}
-const countObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      const el=e.target
-      const target=+el.dataset.target
-      animCount(el,target)
-      countObs.unobserve(el)
-    }
-  })
-},{threshold:0.5})
-document.querySelectorAll('.counting').forEach(el=>countObs.observe(el))
-
-// PARALLAX HERO
-window.addEventListener('scroll',()=>{
-  const y=window.scrollY
-  document.querySelector('.hero-grid').style.transform=`translateY(${y*0.3}px)`
-  document.querySelector('.hero-bg').style.transform=`translateY(${y*0.2}px)`
-})
-
-// SMOOTH SCROLL NAV
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
+/* MOBILE NAV */
+const hbg=document.getElementById('hbg'),nm=document.getElementById('nm'),ov2=document.getElementById('ov2');
+const closeNav=()=>{hbg.classList.remove('op');nm.classList.remove('op');ov2.classList.remove('sh');document.body.style.overflow=''};
+hbg.addEventListener('click',()=>{const o=hbg.classList.toggle('op');nm.classList.toggle('op',o);ov2.classList.toggle('sh',o);document.body.style.overflow=o?'hidden':''});
+ov2.addEventListener('click',closeNav);
+nm.querySelectorAll('li>a').forEach(a=>{
   a.addEventListener('click',e=>{
-    const t=document.querySelector(a.getAttribute('href'))
-    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}
-  })
-})
+    const li=a.parentElement;
+    if(li.querySelector('.drop')&&window.innerWidth<=900){e.preventDefault();li.classList.toggle('op2')}
+    else if(nm.classList.contains('op')){closeNav()}
+  });
+});
+
+/* SMOOTH SCROLL */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}})});
+
+/* INTERSECTION OBSERVER - REVEAL */
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('v')})},{threshold:.1,rootMargin:'0px 0px -35px 0px'});
+document.querySelectorAll('.rv,.rl,.rr').forEach(el=>obs.observe(el));
+
+/* COUNTERS */
+const co=new IntersectionObserver(es=>{es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target,t=+el.dataset.t;let c=0;const inc=t/(1800/16);const tm=setInterval(()=>{c+=inc;if(c>=t){c=t;clearInterval(tm)}el.textContent=Math.floor(c).toLocaleString()},16);co.unobserve(el)})},{threshold:.5});
+document.querySelectorAll('.cnt').forEach(el=>co.observe(el));
+
+/* TILT EFFECT - desktop only */
+if(isMouse){
+  document.querySelectorAll('.tilt').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+      card.style.transform=`perspective(900px) rotateY(${x*9}deg) rotateX(${-y*9}deg) translateZ(8px)`;
+    });
+    card.addEventListener('mouseleave',()=>{card.style.transform='perspective(900px) rotateY(0) rotateX(0) translateZ(0)'});
+  });
+}
+
+/* BANNER PARALLAX */
+window.addEventListener('scroll',()=>{
+  const bg=document.querySelector('.banbg');if(!bg)return;
+  const r=bg.parentElement.getBoundingClientRect();
+  if(r.top<window.innerHeight&&r.bottom>0){const pct=(window.innerHeight-r.top)/(window.innerHeight+r.height);bg.style.transform=`scale(1.1) translateY(${(pct-.5)*42}px)`}
+},{passive:true});
+
+/* STAGGER DELAYS auto */
+document.querySelectorAll('.cgrid .cc,.pgrid .pc,.tgrid .tc,.procg .procc,.ocards .oc').forEach((el,i)=>{if(!el.style.transitionDelay)el.style.transitionDelay=(i*.11)+'s'});
 </script>
 </body>
 </html>
